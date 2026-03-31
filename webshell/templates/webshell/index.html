@@ -1,0 +1,71 @@
+{% extends "webshell/base.html" %}
+{% block title %}Trang chủ - Ttumy{% endblock %}
+
+{% block content %}
+
+<section class="hero text-center">
+    <div class="container">
+        <h1 class="display-5 fw-bold">Ứng dụng hỗ trợ Kế toán</h1>
+
+        <a href="{% url 'webshell:register' %}" class="btn btn-light btn-lg mt-3">Đăng ký để được tư vấn</a>
+
+    </div>
+</section>
+
+<!-- ABOUT (ĐÃ FIX ĐẸP) -->
+{% if about_content %}
+<section class="py-5 bg-white">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">{{ about_content.title }}</h2>
+            <div style="width:60px;height:3px;background:#0d6efd;margin:15px auto;"></div>
+        </div>
+
+        <div class="mx-auto" style="max-width: 800px; color:#333; line-height:1.8; font-size:16px;">
+            {{ about_content.content|safe }}
+        </div>
+
+    </div>
+</section>
+{% endif %}
+
+<section class="section text-center">
+    <div class="container">
+        <h2>Tại sao chọn Ttumy?</h2>
+
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <h5>📄 Số hóa chứng từ</h5>
+                <p>AI đọc và phân loại chứng từ tự động.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>📊 Quản lý tồn kho</h5>
+                <p>Theo dõi nhập - xuất - tồn đơn giản.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>⚖ Cập nhật Thông tư</h5>
+                <p>Luôn theo đúng quy định kế toán.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section bg-light text-center">
+    <div class="container">
+        <h2>Dành cho</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <h5>Cá nhân, hộ kinh doanh không chịu thuế</h5>
+            </div>
+            <div class="col-md-4">
+                <h5>Hộ kinh doanh chịu thuế</h5>
+            </div>
+            <div class="col-md-4">
+                <h5>Doanh nghiệp</h5>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

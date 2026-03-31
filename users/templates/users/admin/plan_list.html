@@ -1,0 +1,73 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Danh sách gói dịch vụ</h5>
+        <a href="{% url 'users_admin:plan_create' %}"
+           class="btn btn-sm btn-primary">
+            + Thêm gói
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Tên gói</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        <strong>{{ plan.name }}</strong><br>
+                        <small class="text-muted">{{ plan.code }}</small>
+                    </td>
+
+                    <td>
+                        {{ plan.price|floatformat:0 }} đ
+                    </td>
+
+                    <td>
+                        {% if plan.is_active %}
+                            <span class="badge bg-success">Hoạt động</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Tạm dừng</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+                        <a href="{% url 'users_admin:plan_module_manage' plan.id %}"
+                           class="btn btn-sm btn-outline-primary">
+                           ⚙ Module
+                        </a>
+
+                        <a href="{% url 'users_admin:plan_edit' plan.id %}"
+                           class="btn btn-sm btn-outline-warning">
+                           ✏ Sửa
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        Chưa có gói nào
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+{% endblock %}

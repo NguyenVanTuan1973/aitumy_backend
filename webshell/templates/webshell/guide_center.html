@@ -1,0 +1,60 @@
+{% extends "webshell/base.html" %}
+{% block title %}Trung tâm hướng dẫn{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <h2>Trung tâm hướng dẫn</h2>
+    <hr>
+    <h4>Giao diện thực tế trên thiết bị Mobile</h4>
+
+    <div class="demo-grid">
+      <img src="/media/tumy_demo_1.jpg">
+      <img src="/media/tumy_demo_2.jpg">
+      <img src="/media/tumy_demo_3.jpg">
+      <img src="/media/tumy_demo_4.jpg">
+      <img src="/media/tumy_demo_5.jpg">
+      <img src="/media/tumy_demo_6.jpg">
+    </div>
+    <hr>
+    <div class="row mt-4">
+
+        <!-- Clip hướng dẫn -->
+        <div class="col-md-4">
+            <h6>Clip hướng dẫn</h6>
+            {% if landing %}
+                <div>
+                    {{ landing.content|safe }}
+                </div>
+            {% else %}
+                <p>Đang cập nhật...</p>
+            {% endif %}
+        </div>
+
+        <!-- Bài viết -->
+        <div class="col-md-4">
+            <h6>Bài viết</h6>
+            {% if about %}
+                <div>
+                    {{ about.content|safe }}
+                </div>
+            {% else %}
+                <p>Đang cập nhật...</p>
+            {% endif %}
+        </div>
+
+        <!-- FAQ -->
+        <div class="col-md-4">
+            <h6>FAQ</h6>
+            {% if faq %}
+                <div>
+                    {{ faq.content|safe }}
+                </div>
+            {% else %}
+                <p>Đang cập nhật...</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>Support Conversations</h2>
+
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Updated</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for convo in conversations %}
+        <tr>
+            <td>{{ convo.id }}</td>
+            <td>{{ convo.user.email }}</td>
+            <td>
+                {% if convo.is_closed %}
+                    <span class="badge bg-secondary">Closed</span>
+                {% else %}
+                    <span class="badge bg-success">Open</span>
+                {% endif %}
+            </td>
+            <td>{{ convo.updated_at }}</td>
+            <td>
+                <a href="{% url 'admin_portal:admin_support_detail' convo.id %}"
+                   class="btn btn-sm btn-primary">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+<script>
+  setInterval(function () {
+    window.location.reload();
+  }, 5000); // 5 giây
+</script>

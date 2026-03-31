@@ -1,0 +1,9 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<h3>Thông tin tài khoản</h3>
+
+<p><strong>Email:</strong> {{ request.user.email }}</p>
+<p><strong>Loại tài khoản:</strong> Free</p>
+
+{% endblock %}

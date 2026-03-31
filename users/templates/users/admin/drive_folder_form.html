@@ -1,0 +1,37 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>{% if folder %}Chỉnh sửa{% else %}Thêm{% endif %} Thư mục</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>User</label>
+    <select name="user" required>
+        {% for user in users %}
+            <option value="{{ user.id }}"
+                {% if folder.user.id == user.id %}selected{% endif %}>
+                {{ user.email }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Tên thư mục</label>
+    <input type="text" name="name"
+           value="{{ folder.name|default:'' }}" required>
+
+    <label>Thư mục cha</label>
+    <select name="parent">
+        <option value="">-- Không có --</option>
+        {% for f in folders %}
+            <option value="{{ f.id }}"
+                {% if folder.parent.id == f.id %}selected{% endif %}>
+                {{ f.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>
+
+{% endblock %}

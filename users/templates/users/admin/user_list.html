@@ -1,0 +1,37 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>Quản lý Người dùng</h2>
+
+<a href="{% url 'users_admin:user_add' %}" class="btn btn-primary">+ Thêm người dùng</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Họ tên</th>
+            <th>Superuser</th>
+            <th>Active</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user.full_name }}</td>
+            <td>{{ user.is_superuser|yesno:"Có,Không" }}</td>
+            <td>{{ user.is_active|yesno:"Có,Không" }}</td>
+            <td>{{ user.date_joined }}</td>
+            <td>
+                <a href="{% url 'users_admin:user_edit' user.id %}">Sửa</a> |
+                <a href="{% url 'users_admin:user_delete' user.id %}"
+                   onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

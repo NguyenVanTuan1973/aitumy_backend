@@ -1,0 +1,29 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>Organizations</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Tax Code</th>
+            <th>Legal Form</th>
+            <th>Members</th>
+            <th>Profiles</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for org in orgs %}
+        <tr>
+            <td>{{ org.name }}</td>
+            <td>{{ org.tax_code }}</td>
+            <td>{{ org.get_legal_form_display }}</td>
+            <td>{{ org.member_count }}</td>
+            <td>{{ org.profile_count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

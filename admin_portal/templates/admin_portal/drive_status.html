@@ -1,0 +1,25 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+<h2>Drive Status</h2>
+
+<table class="table table-bordered bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>User</th>
+            <th>Drive ID</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for drive in drives %}
+        <tr>
+            <td>{{ drive.user.email }}</td>
+            <td>{{ drive.drive_id }}</td>
+            <td>{{ drive.created_at }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

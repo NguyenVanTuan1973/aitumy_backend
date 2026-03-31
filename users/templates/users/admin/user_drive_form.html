@@ -1,0 +1,31 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+
+<h2>{% if drive %}Chỉnh sửa{% else %}Thêm{% endif %} User Drive</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>User</label>
+    <select name="user" required>
+        {% for user in users %}
+            <option value="{{ user.id }}"
+                {% if drive.user.id == user.id %}selected{% endif %}>
+                {{ user.email }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Tổng dung lượng (MB)</label>
+    <input type="number" name="total_storage"
+           value="{{ drive.total_storage|default:0 }}">
+
+    <label>Đã sử dụng (MB)</label>
+    <input type="number" name="used_storage"
+           value="{{ drive.used_storage|default:0 }}">
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>
+
+{% endblock %}

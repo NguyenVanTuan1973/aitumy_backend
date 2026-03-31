@@ -1,0 +1,86 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>
+            {% if module %}
+                ✏️ Chỉnh sửa App Module
+            {% else %}
+                ➕ Thêm App Module
+            {% endif %}
+        </h3>
+
+        <a href="{% url 'appconfig_admin:module_list' %}" class="btn btn-secondary">
+            ← Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- CODE -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Mã Module (code) <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           name="code"
+                           class="form-control"
+                           required
+                           value="{{ module.code|default:'' }}"
+                           placeholder="Ví dụ: finance">
+                    <div class="form-text">
+                        Không chứa khoảng trắng. Dùng để mapping với Flutter.
+                    </div>
+                </div>
+
+                <!-- NAME -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Tên Module <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           required
+                           value="{{ module.name|default:'' }}"
+                           placeholder="Ví dụ: Tài chính ngân sách">
+                </div>
+
+                <!-- ACTIVE -->
+                <div class="form-check mb-4">
+                    <input type="checkbox"
+                           name="is_active"
+                           class="form-check-input"
+                           id="isActiveCheck"
+                           {% if module %}
+                               {% if module.is_active %}checked{% endif %}
+                           {% else %}
+                               checked
+                           {% endif %}>
+                    <label class="form-check-label" for="isActiveCheck">
+                        Kích hoạt module
+                    </label>
+                </div>
+
+                <hr>
+
+                <!-- ACTION BUTTON -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success px-4">
+                        💾 Lưu
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

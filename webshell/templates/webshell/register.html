@@ -1,0 +1,60 @@
+{% extends "webshell/base.html" %}
+{% block title %}Đăng ký tư vấn{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background:#f8f9fa;">
+    <div class="container" style="max-width:700px;">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+
+                <h3 class="text-center mb-4">
+                    Đăng ký để được tư vấn dùng thử
+                </h3>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên *</label>
+                        {{ form.full_name }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại *</label>
+                        {{ form.phone }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Loại hình doanh nghiệp</label>
+                        {{ form.business_type }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Quy mô (số nhân sự / doanh thu...)</label>
+                        {{ form.company_size }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nhu cầu / Ghi chú</label>
+                        {{ form.note }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Gửi đăng ký
+                    </button>
+                </form>
+
+                <p class="text-muted small mt-3 text-center">
+                    Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
+                </p>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

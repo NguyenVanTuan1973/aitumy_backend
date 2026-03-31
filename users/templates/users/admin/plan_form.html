@@ -1,0 +1,91 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">
+            {% if is_edit %}
+                ✏ Chỉnh sửa gói
+            {% else %}
+                ➕ Tạo gói mới
+            {% endif %}
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Tên gói</label>
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           value="{{ plan.name|default:'' }}"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Mã gói</label>
+                    <input type="text"
+                           name="code"
+                           class="form-control"
+                           value="{{ plan.code|default:'' }}"
+                           required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Giá (VNĐ)</label>
+                    <input type="number"
+                           name="price"
+                           class="form-control"
+                           value="{{ plan.price|default:0 }}">
+                </div>
+
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="is_active"
+                               id="is_active"
+                               {% if plan.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="is_active">
+                            Kích hoạt gói
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'users_admin:plan_list' %}"
+                   class="btn btn-secondary">
+                   ← Quay lại
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    {% if is_edit %}
+                        💾 Cập nhật
+                    {% else %}
+                        🚀 Tạo gói
+                    {% endif %}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

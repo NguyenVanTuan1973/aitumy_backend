@@ -1,0 +1,26 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+<h2>{% if organization %}Chỉnh sửa{% else %}Thêm{% endif %} Tổ chức</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Tên tổ chức</label>
+    <input type="text" name="name" value="{{ organization.name|default:'' }}" required>
+
+    <label>Địa chỉ</label>
+    <input type="text" name="address" value="{{ organization.address|default:'' }}">
+
+    <label>Mã số thuế</label>
+    <input type="text" name="tax_code" value="{{ organization.tax_code|default:'' }}">
+
+    <label>Loại hình</label>
+    <select name="legal_form">
+        <option value="INDIVIDUAL">Cá nhân</option>
+        <option value="HKD">Hộ kinh doanh</option>
+        <option value="ENTERPRISE">Doanh nghiệp</option>
+    </select>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>
+{% endblock %}

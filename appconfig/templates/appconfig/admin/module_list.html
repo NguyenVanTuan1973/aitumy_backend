@@ -1,0 +1,31 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+<h3>Danh sách App Modules</h3>
+
+<a href="{% url 'appconfig_admin:module_create' %}" class="btn btn-primary mb-3">
+    + Thêm Module
+</a>
+
+<table class="table table-bordered">
+    <tr>
+        <th>ID</th>
+        <th>Code</th>
+        <th>Tên</th>
+        <th>Active</th>
+        <th>Hành động</th>
+    </tr>
+    {% for m in modules %}
+    <tr>
+        <td>{{ m.id }}</td>
+        <td>{{ m.code }}</td>
+        <td>{{ m.name }}</td>
+        <td>{{ m.is_active|yesno:"✔,✘" }}</td>
+        <td>
+            <a href="{% url 'appconfig_admin:module_edit' m.id %}">Sửa</a> |
+            <a href="{% url 'appconfig_admin:module_delete' m.id %}"
+               onclick="return confirm('Xóa module này?')">Xóa</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

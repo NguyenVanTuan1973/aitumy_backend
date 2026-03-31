@@ -1,0 +1,81 @@
+{% extends "admin_portal/base.html" %}
+{% block title %}
+    {% if form.instance.pk %}Edit Landing Section{% else %}Create Landing Section{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">
+            {% if form.instance.pk %}Edit Section{% else %}Create Section{% endif %}
+        </h3>
+        <a href="{% url 'admin_portal:admin_landing_section_list' %}"
+           class="btn btn-outline-secondary">
+            ← Back
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.media }}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Title -->
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small">
+                            {{ form.title.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Content -->
+                <div class="mb-3">
+                    {{ form.content.label_tag }}
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        <div class="text-danger small">
+                            {{ form.content.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Order -->
+                <div class="mb-3">
+                    {{ form.order.label_tag }}
+                    {{ form.order }}
+                    {% if form.order.errors %}
+                        <div class="text-danger small">
+                            {{ form.order.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Active -->
+                <div class="form-check mb-4">
+                    {{ form.is_active }}
+                    {{ form.is_active.label_tag }}
+                </div>
+
+                <button type="submit" class="btn btn-primary px-4">
+                    Save
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

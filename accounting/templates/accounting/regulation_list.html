@@ -1,0 +1,29 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h3>📜 Danh mục Thông tư</h3>
+
+<a href="{% url 'accounting:regulation_create' %}" class="btn btn-primary mb-3">
+    + Thêm mới
+</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Ngày hiệu lực</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in regulations %}
+        <tr>
+            <td>{{ r.code }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.effective_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background: #1f2937;
+            color: white;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+
+        .sidebar a:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .topbar {
+            background: white;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <h5 class="text-center">AITUMY</h5>
+
+            <a href="{% url 'dashboard_overview' %}">Tổng quan</a>
+            <a href="{% url 'dashboard_transactions' %}">Thu chi</a>
+            <a href="{% url 'dashboard_ai' %}">AI Trợ lý</a>
+            <a href="{% url 'dashboard_support' %}">Support</a>
+            <a href="{% url 'dashboard_profile' %}">Tài khoản</a>
+            <hr>
+            <a href="/logout/">Đăng xuất</a>
+        </div>
+
+        <!-- Content -->
+        <div class="col-md-10">
+
+            <div class="topbar">
+                Xin chào, {{ request.user.username }}
+            </div>
+
+            <div class="p-4">
+                {% block content %}{% endblock %}
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

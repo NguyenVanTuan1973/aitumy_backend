@@ -1,0 +1,47 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h3 class="mb-4">
+        Quản lý Module cho gói:
+        <strong>{{ plan.name }}</strong>
+    </h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card">
+            <div class="card-body">
+
+                {% for module in modules %}
+                <div class="form-check mb-2">
+                    <input type="checkbox"
+                           name="modules"
+                           value="{{ module.id }}"
+                           class="form-check-input"
+                           id="module{{ module.id }}"
+                           {% if module.id in assigned_ids %}checked{% endif %}>
+                    <label class="form-check-label" for="module{{ module.id }}">
+                        <strong>{{ module.name }}</strong>
+                        <small class="text-muted">({{ module.code }})</small>
+                    </label>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-success">💾 Lưu thay đổi</button>
+            <a href="{% url 'users_admin:plan_list' %}" class="btn btn-secondary">
+                ← Quay lại
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

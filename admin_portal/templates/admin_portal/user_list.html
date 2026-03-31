@@ -1,0 +1,41 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>User Management</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Active</th>
+            <th>Organizations</th>
+            <th>Profiles</th>
+            <th>Joined</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user.full_name }}</td>
+            <td>
+                {% if user.is_active %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                {% endif %}
+            </td>
+            <td>{{ user.org_count }}</td>
+            <td>{{ user.profile_count }}</td>
+            <td>{{ user.date_joined }}</td>
+            <td>
+                <a href="{% url 'admin_portal:admin_user_detail' user.id %}" class="btn btn-sm btn-primary">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

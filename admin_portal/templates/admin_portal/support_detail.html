@@ -1,0 +1,96 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-0">💬 Conversation #{{ conversation.id }}</h4>
+            <small class="text-muted">
+                User: {{ conversation.user.email }}
+            </small>
+        </div>
+
+        <div>
+            {% if not conversation.is_closed %}
+                <form method="post" action="{% url 'admin_portal:admin_close_conversation' conversation.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-danger">
+                        Close Conversation
+                    </button>
+                </form>
+            {% else %}
+                <span class="badge bg-secondary p-2">Closed</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Chat Box -->
+    <div class="card bg-dark text-light">
+        <div class="card-body"
+             style="height: 500px; overflow-y: auto;"
+             id="chatBox">
+
+            {% for msg in messages %}
+                {% if msg.sender.is_staff %}
+                    <!-- Admin Message -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="bg-primary text-white p-3 rounded"
+                             style="max-width: 70%;">
+                            <div>{{ msg.content }}</div>
+                            <div class="text-end small mt-1">
+                                {{ msg.created_at }}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- User Message -->
+                    <div class="d-flex justify-content-start mb-3">
+                        <div class="bg-secondary text-white p-3 rounded"
+                             style="max-width: 70%;">
+                            <div>{{ msg.content }}</div>
+                            <div class="text-start small mt-1">
+                                {{ msg.created_at }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p class="text-muted">No messages yet.</p>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <!-- Reply Form -->
+    {% if not conversation.is_closed %}
+    <div class="card bg-dark text-light mt-3">
+        <div class="card-body">
+            <form method="post"
+                  action="{% url 'admin_portal:admin_reply_conversation' conversation.id %}">
+                {% csrf_token %}
+                <div class="input-group">
+                    <textarea name="message"
+                              class="form-control"
+                              rows="2"
+                              placeholder="Type your reply..."
+                              required></textarea>
+                    <button class="btn btn-success">
+                        Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    // Auto scroll to bottom
+    const chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+
+{% endblock %}

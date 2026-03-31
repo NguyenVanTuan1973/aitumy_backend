@@ -1,0 +1,47 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>{% if user_obj %}Chỉnh sửa{% else %}Thêm{% endif %} Người dùng</h2>
+
+<form method="post" style="max-width:600px;">
+    {% csrf_token %}
+
+    <div>
+        <label>Email</label>
+        <input type="email" name="email" 
+               value="{{ user_obj.email|default:'' }}" required>
+    </div>
+
+    <div>
+        <label>Họ tên</label>
+        <input type="text" name="full_name" 
+               value="{{ user_obj.full_name|default:'' }}">
+    </div>
+
+    {% if not user_obj %}
+    <div>
+        <label>Mật khẩu</label>
+        <input type="password" name="password" required>
+    </div>
+    {% endif %}
+
+    <div>
+        <label>
+            <input type="checkbox" name="is_superuser"
+                {% if user_obj.is_superuser %}checked{% endif %}>
+            Là quản trị viên
+        </label>
+    </div>
+
+    <div>
+        <label>
+            <input type="checkbox" name="is_active"
+                {% if user_obj.is_active %}checked{% endif %}>
+            Kích hoạt
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>
+
+{% endblock %}

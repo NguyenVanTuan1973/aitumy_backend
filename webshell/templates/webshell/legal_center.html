@@ -1,0 +1,26 @@
+{% extends "webshell/base.html" %}
+{% block title %}Trung tâm pháp lý{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <h2>Trung tâm pháp lý</h2>
+
+    <ul class="list-group mt-4">
+        {% for doc in documents %}
+            <li class="list-group-item">
+                <strong>{{ doc.title }}</strong><br>
+                Số hiệu: {{ doc.code }}<br>
+                Ngày ban hành: {{ doc.issued_date }}<br>
+
+                <a href="{{ doc.file.url }}" target="_blank">
+                    Xem file
+                </a>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">
+                Chưa có văn bản nào.
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

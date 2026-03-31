@@ -1,0 +1,36 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+<h2>Danh sách Tổ chức</h2>
+
+<a href="{% url 'users_admin:organization_add' %}" class="btn btn-primary">+ Thêm mới</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Mã số thuế</th>
+            <th>Loại hình</th>
+            <th>Plan</th>
+            <th>Module</th>
+            <th>sub_valid</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for org in organizations %}
+        <tr>
+            <td>{{ org.name }}</td>
+            <td>{{ org.tax_code }}</td>
+            <td>{{ org.legal_form }}</td>
+            <td>{{ org.legal }}</td>
+            <td>{{ org.modules }}</td>
+            <td>{{ org.subscription_valid }}</td>
+            <td>
+                <a href="{% url 'users_admin:organization_edit' org.id %}">Sửa</a> |
+                <a href="{% url 'users_admin:organization_delete' org.id %}" onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

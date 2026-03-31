@@ -1,0 +1,46 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>Gán Ngành nghề cho Tổ chức</h2>
+
+<form method="post" style="max-width:600px;">
+    {% csrf_token %}
+
+    <div style="margin-bottom:15px;">
+        <label><strong>Chọn Tổ chức</strong></label><br>
+        <select name="organization" required style="width:100%; padding:8px;">
+            <option value="">-- Chọn tổ chức --</option>
+            {% for org in organizations %}
+                <option value="{{ org.id }}">
+                    {{ org.name }} ({{ org.get_legal_form_display }})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div style="margin-bottom:15px;">
+        <label><strong>Chọn Ngành nghề</strong></label><br>
+        <select name="industry" required style="width:100%; padding:8px;">
+            <option value="">-- Chọn ngành nghề --</option>
+            {% for ind in industries %}
+                <option value="{{ ind.id }}">
+                    {{ ind.code }} - {{ ind.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div style="margin-top:20px;">
+        <button type="submit" class="btn btn-success">
+            Lưu
+        </button>
+        <a href="{% url 'users_admin:organization_industry_list' %}" 
+           class="btn btn-secondary"
+           style="margin-left:10px;">
+            Hủy
+        </a>
+    </div>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+<div class="container" style="max-width:800px;">
+    <h3 class="mb-4">Chi tiết đăng ký tư vấn</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <p><strong>Họ tên:</strong> {{ consultation.full_name }}</p>
+            <p><strong>Điện thoại:</strong> {{ consultation.phone }}</p>
+            <p><strong>Email:</strong> {{ consultation.email }}</p>
+            <p><strong>Loại hình doanh nghiệp:</strong> {{ consultation.get_business_type_display }}</p>
+            <p><strong>Quy mô:</strong> {{ consultation.company_size|default:"-" }}</p>
+
+            <hr>
+
+            <p><strong>Nhu cầu / Ghi chú:</strong></p>
+            <div class="border p-3 bg-light rounded">
+                {{ consultation.note|default:"Không có ghi chú" }}
+            </div>
+
+            <hr>
+
+            <p><strong>Trạng thái:</strong>
+                {% if consultation.is_contacted %}
+                    <span class="badge bg-success">Đã liên hệ</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Chưa liên hệ</span>
+                {% endif %}
+            </p>
+
+            <div class="mt-4">
+                <a href="{% url 'admin_portal:admin_toggle_consultation' consultation.id %}"
+                   class="btn btn-primary">
+                    🔄 Đổi trạng thái
+                </a>
+
+                <a href="{% url 'admin_portal:admin_consultation_list' %}"
+                   class="btn btn-secondary">
+                    ← Quay lại
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

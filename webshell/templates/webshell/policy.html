@@ -1,0 +1,22 @@
+{% extends "webshell/base.html" %}
+{% block title %}Chính sách{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <h2>Chính sách & Điều khoản</h2>
+
+    {% if privacy %}
+        <h5 class="mt-4">{{ privacy.title }}</h5>
+        <div>
+            {{ privacy.content|safe }}
+        </div>
+    {% endif %}
+
+    {% if terms %}
+        <h5 class="mt-4">{{ terms.title }}</h5>
+        <div>
+            {{ terms.content|safe }}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

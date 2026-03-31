@@ -1,0 +1,30 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+
+<h2>Quản lý User Drive</h2>
+
+<a href="{% url 'users_admin:user_drive_add' %}" class="btn btn-primary">+ Thêm Drive</a>
+
+<table class="table">
+    <tr>
+        <th>User</th>
+        <th>Dung lượng (MB)</th>
+        <th>Đã sử dụng</th>
+        <th>Hành động</th>
+    </tr>
+    {% for drive in drives %}
+    <tr>
+        <td>{{ drive.user.email }}</td>
+        <td>{{ drive.total_storage }}</td>
+        <td>{{ drive.used_storage }}</td>
+        <td>
+            <a href="{% url 'users_admin:user_drive_edit' drive.id %}">Sửa</a> |
+            <a href="{% url 'users_admin:user_drive_delete' drive.id %}"
+               onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

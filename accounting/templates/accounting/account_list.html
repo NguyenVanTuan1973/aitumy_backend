@@ -1,0 +1,44 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h3>🏦 Danh mục Tài khoản</h3>
+
+<a href="{% url 'accounting:account_create' %}" class="btn btn-primary mb-3">
+    + Thêm mới
+</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Tên tài khoản</th>
+            <th>Parent</th>
+            <th>Loại</th>
+            <th>Dư</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for acc in accounts %}
+        <tr>
+            <td>{{ acc.code }}</td>
+            <td>
+                {% if acc.parent %}
+                    &nbsp;&nbsp;&nbsp;↳
+                {% endif %}
+                {{ acc.name }}
+            </td>
+            <td>{{ acc.parent.code|default:"-" }}</td>
+            <td>{{ acc.get_account_type_display }}</td>
+            <td>{{ acc.get_normal_balance_display }}</td>
+            <td>
+                <a href="{% url 'accounting:account_edit' acc.pk %}">
+                    Sửa
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

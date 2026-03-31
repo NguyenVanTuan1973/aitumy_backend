@@ -1,0 +1,50 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>Quản lý Drive Nodes</h2>
+
+<a href="{% url 'users_admin:drive_folder_add' %}" class="btn btn-primary">
+    + Thêm Node
+</a>
+
+<table class="table">
+    <tr>
+        <th>Tên</th>
+        <th>Loại</th>
+        <th>User</th>
+        <th>Thư mục cha</th>
+        <th>Google ID</th>
+        <th>Hành động</th>
+    </tr>
+
+    {% for folder in folders %}
+    <tr>
+        <td>{{ folder.name }}</td>
+        <td>{{ folder.get_node_type_display }}</td>
+        <td>{{ folder.drive.user.email }}</td>
+        <td>
+            {% if folder.parent_folder %}
+                {{ folder.parent_folder.name }}
+            {% else %}
+                —
+            {% endif %}
+        </td>
+        <td>
+            {% if folder.folder_id %}
+                Folder: {{ folder.folder_id }}
+            {% elif folder.sheet_id %}
+                Sheet: {{ folder.sheet_id }}
+            {% else %}
+                —
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'users_admin:drive_folder_edit' folder.id %}">Sửa</a> |
+            <a href="{% url 'users_admin:drive_folder_delete' folder.id %}"
+               onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

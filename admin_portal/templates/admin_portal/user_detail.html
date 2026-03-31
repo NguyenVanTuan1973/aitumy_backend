@@ -1,0 +1,116 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2>User Detail</h2>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <p><strong>Email:</strong> {{ user_obj.email }}</p>
+
+        <p>
+            <strong>Status:</strong>
+            {% if user_obj.is_active %}
+                <span class="badge bg-success">Active</span>
+            {% else %}
+                <span class="badge bg-danger">Disabled</span>
+            {% endif %}
+        </p>
+
+        <p><strong>Joined:</strong> {{ user_obj.date_joined }}</p>
+        <p><strong>Last Login:</strong> {{ user_obj.last_login }}</p>
+
+        <a href="{% url 'admin_portal:admin_toggle_user' user_obj.id %}"
+           class="btn btn-warning">
+            Toggle Active
+        </a>
+    </div>
+</div>
+
+
+<!-- ============================= -->
+<h5>Organizations</h5>
+<ul class="list-group mb-4">
+{% for m in memberships %}
+    <li class="list-group-item">
+        {{ m.organization.name }} -
+        {% if m.is_active %}
+            <span class="badge bg-success">Active</span>
+        {% else %}
+            <span class="badge bg-danger">Disabled</span>
+        {% endif %}
+    </li>
+{% empty %}
+    <li class="list-group-item">No organization</li>
+{% endfor %}
+</ul>
+
+
+<!-- ============================= -->
+<h5>Modules</h5>
+<ul class="list-group mb-4">
+{% for m in modules %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ m.module.name }}
+
+        {% if m.is_active %}
+            <span class="badge bg-success">Enabled</span>
+        {% else %}
+            <span class="badge bg-danger">Disabled</span>
+        {% endif %}
+
+        <a href="{% url 'admin_portal:admin_toggle_user_module' m.id %}"
+           class="btn btn-sm btn-outline-secondary">
+            Toggle
+        </a>
+    </li>
+{% empty %}
+    <li class="list-group-item">No modules assigned</li>
+{% endfor %}
+</ul>
+
+
+<!-- ============================= -->
+<h5>Google Drive</h5>
+{% if drive %}
+    <p>Folder ID: {{ drive.drive_folder_id }}</p>
+{% else %}
+    <span class="text-muted">No Drive Connected</span>
+{% endif %}
+
+
+<!-- ============================= -->
+<h5>Recent Sessions</h5>
+<ul class="list-group">
+{% for session in sessions %}
+    <li class="list-group-item d-flex justify-content-between">
+
+        <div>
+            {{ session.created_at }} |
+            {{ session.ip_address }}
+
+            {% if session.is_active %}
+                <span class="badge bg-success">Active</span>
+            {% else %}
+                <span class="badge bg-secondary">Revoked</span>
+            {% endif %}
+        </div>
+
+        {% if session.is_active %}
+        <a href="{% url 'admin_portal:admin_revoke_session' session.id %}"
+           class="btn btn-sm btn-danger">
+            Revoke
+        </a>
+        {% endif %}
+    </li>
+{% empty %}
+    <li class="list-group-item">No sessions</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
+
+<script>
+  setInterval(function () {
+    window.location.reload();
+  }, 5000); // reload mỗi 5 giây
+</script>

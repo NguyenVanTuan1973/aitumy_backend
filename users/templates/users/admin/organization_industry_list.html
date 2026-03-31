@@ -1,0 +1,23 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+<h2>Gán ngành cho tổ chức</h2>
+
+<a href="{% url 'users_admin:organization_industry_add' %}">+ Thêm liên kết</a>
+
+<table class="table">
+    <tr>
+        <th>Tổ chức</th>
+        <th>Ngành nghề</th>
+        <th>Hành động</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td>{{ item.organization.name }}</td>
+        <td>{{ item.industry.name }}</td>
+        <td>
+            <a href="{% url 'users_admin:organization_industry_delete' item.id %}">Xóa</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

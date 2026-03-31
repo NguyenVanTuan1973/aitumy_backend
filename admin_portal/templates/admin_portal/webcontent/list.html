@@ -1,0 +1,40 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>Quản lý nội dung website</h3>
+
+    <a href="{% url 'admin_portal:admin_webcontent_create' %}"
+       class="btn btn-primary mb-3">
+       Thêm nội dung
+    </a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Loại</th>
+                <th>Tiêu đề</th>
+                <th>Active</th>
+                <th>Cập nhật</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in contents %}
+            <tr>
+                <td>{{ item.get_content_key_display }}</td>
+                <td>{{ item.title }}</td>
+                <td>{{ item.is_active }}</td>
+                <td>{{ item.updated_at }}</td>
+                <td>
+                    <a href="{% url 'admin_portal:admin_webcontent_edit' item.id %}"
+                       class="btn btn-sm btn-warning">
+                       Sửa
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

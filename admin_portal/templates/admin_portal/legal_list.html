@@ -1,0 +1,31 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+<h2>Văn bản pháp lý</h2>
+
+<a href="{% url 'admin_portal:admin_legal_upload' %}">Upload văn bản mới</a>
+
+<table>
+    <tr>
+        <th>Code</th>
+        <th>Tiêu đề</th>
+        <th>Loại</th>
+        <th>Ngày ban hành</th>
+        <th></th>
+    </tr>
+    {% for doc in documents %}
+    <tr>
+        <td>{{ doc.code }}</td>
+        <td>{{ doc.title }}</td>
+        <td>{{ doc.get_document_type_display }}</td>
+        <td>{{ doc.issued_date }}</td>
+        <td>
+            <a href="{{ doc.file.url }}" target="_blank">
+                    Xem
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

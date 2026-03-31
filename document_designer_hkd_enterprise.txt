@@ -1,0 +1,51 @@
+DOCX template phải thiết kế chuẩn
+File .docx cần có placeholder.
+SỔ CHI TIẾT TIỀN MẶT
+
+Đơn vị: {{company_name}}
+Tháng: {{month}}/{{year}}
+
+-----------------------------------------------------
+Ngày | Chứng từ | Diễn giải | Thu | Chi | Tồn
+-----------------------------------------------------
+{% for row in rows %}
+{{row.date}} | {{row.voucher}} | {{row.desc}} | {{row.in}} | {{row.out}} | {{row.balance}}
+{% endfor %}
+-----------------------------------------------------
+
+Người lập sổ
+Kế toán trưởng
+
+Render DOCX bằng Python : pip install docxtpl
+
+Convert DOCX → PDF
+
+structure_json trong Template nên dùng thế nào: Bạn nên lưu mapping.
+Ví dụ :
+{
+  "sheet_fields": {
+    "date": "date",
+    "voucher": "voucher_no",
+    "desc": "description",
+    "in": "amount_in",
+    "out": "amount_out",
+    "balance": "balance"
+  }
+}
+
+AI sau này có thể fill sổ
+structure_json
+keywords
+
+Tôi khuyên bạn thêm 1 bảng nữa (rất quan trọng) : AccountingBook(models.Model):
+
+Công cụ tạo sổ chuẩn : Book Generator Engine gồm : book_generator.py
+Tự động :
+query sheet
+render docx
+convert pdf
+
+structure_json chuẩn cho tất cả sổ HKD : để backend tự map field.
+
+Template DOCX chuẩn cho TT152/2025 : để bạn import thẳng.
+

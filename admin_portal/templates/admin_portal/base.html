@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background: #1f2937;
+            color: white;
+            position: fixed;
+            width: 240px;
+            overflow-y: auto;     /* ✅ thêm dòng này */
+            overflow-x: hidden;   /* ✅ tránh scroll ngang */
+        }
+
+        .sidebar h4 {
+            font-weight: 600;
+        }
+
+        .sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            display: block;
+            padding: 12px 20px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .sidebar a.active {
+            background: #0d6efd;
+            color: white;
+            font-weight: 500;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            background: white;
+            padding: 15px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+        }
+
+        .card-body h6 {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .card-body h3 {
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4 class="p-3 border-bottom border-secondary">
+        Admin Portal
+    </h4>
+
+    <a href="{% url 'admin_portal:admin_dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+        📊 Dashboard
+    </a>
+
+    <h6 class="px-3 text-muted">User Management</h6>
+
+    <a href="{% url 'users_admin:user_list' %}"
+       class="{% if request.resolver_match.url_name in 'user_list user_add user_edit user_delete' %}active{% endif %}">
+        👤 Users
+    </a>
+
+    <a href="{% url 'users_admin:organization_list' %}"
+       class="{% if request.resolver_match.url_name in 'organization_list organization_add organization_edit organization_delete' %}active{% endif %}">
+        🏢 Organizations
+    </a>
+
+    <a href="{% url 'users_admin:industry_list' %}"
+       class="{% if request.resolver_match.url_name in 'industry_list industry_add industry_edit industry_delete' %}active{% endif %}">
+        🏭 Industries
+    </a>
+
+    <a href="{% url 'users_admin:organization_industry_list' %}"
+       class="{% if request.resolver_match.url_name in 'organization_industry_list organization_industry_add organization_industry_delete' %}active{% endif %}">
+        🔗 Organization Industries
+    </a>
+
+    <a href="{% url 'users_admin:user_drive_list' %}"
+       class="{% if request.resolver_match.url_name in 'user_drive_list user_drive_add user_drive_edit user_drive_delete' %}active{% endif %}">
+        💾 User Drives
+    </a>
+
+    <a href="{% url 'users_admin:drive_folder_list' %}"
+       class="{% if request.resolver_match.url_name in 'drive_folder_list drive_folder_add drive_folder_edit drive_folder_delete' %}active{% endif %}">
+        📁 Drive Folders
+    </a>
+
+    <a href="{% url 'admin_portal:admin_drive_status' %}"
+       class="{% if request.resolver_match.url_name == 'admin_drive_status' %}active{% endif %}">
+        💾 Drive Status
+    </a>
+
+    <a href="{% url 'admin_portal:admin_logs' %}"
+       class="{% if request.resolver_match.url_name == 'admin_logs' %}active{% endif %}">
+        📄 Logs
+    </a>
+
+    <a href="{% url 'admin_portal:admin_legal_list' %}"
+       class="{% if request.resolver_match.url_name in 'admin_legal_list admin_legal_upload admin_legal_detail' %}active{% endif %}">
+        ⚖️ Legal Documents
+    </a>
+
+    <a href="{% url 'admin_portal:admin_support_conversations' %}"
+       class="{% if request.resolver_match.url_name in 'admin_support_conversations admin_support_detail' %}active{% endif %}">
+        💬 Support (Inbox)
+    </a>
+
+    <hr class="border-secondary">
+    <h6 class="px-3 text-muted">Web CMS</h6>
+
+    <a href="{% url 'admin_portal:admin_product_list' %}"
+       class="{% if request.resolver_match.url_name in 'admin_product_list admin_product_create admin_product_edit' %}active{% endif %}">
+        📦 Web Products
+    </a>
+
+    <a href="{% url 'admin_portal:admin_guide_list' %}"
+       class="{% if request.resolver_match.url_name in 'admin_guide_list admin_guide_create admin_guide_edit' %}active{% endif %}">
+        📚 Guide Center
+    </a>
+
+    <a href="{% url 'admin_portal:admin_landing_section_list' %}"
+       class="{% if request.resolver_match.url_name in 'admin_landing_section_list admin_landing_section_create admin_landing_section_edit' %}active{% endif %}">
+        📜 Landing Sections
+    </a>
+
+    <a href="{% url 'admin_portal:admin_webcontent_list' %}"
+       class="{% if request.resolver_match.url_name in 'admin_webcontent_list admin_webcontent_create admin_webcontent_edit' %}active{% endif %}">
+        📰 Website Contents
+    </a>
+
+    <hr class="border-secondary">
+
+    <a href="{% url 'admin_portal:admin_consultation_list' %}"
+       class="{% if request.resolver_match.url_name in 'admin_consultation_list admin_toggle_consultation' %}active{% endif %}">
+        📝 Đăng ký tư vấn
+    </a>
+
+    <h6 class="px-3 text-muted">App Config</h6>
+    <a href="/admin-portal/appconfig/modules/">⚙ App Modules</a>
+    <a href="/admin-portal/appconfig/sidebar/">📂 Sidebar</a>
+    <a href="/admin-portal/appconfig/settings/">🛠 App Settings</a>
+    <a href="/admin-portal/appconfig/media/">🖼 Media</a>
+
+    <h6 class="px-3 text-muted">Billing</h6>
+
+    <a href="{% url 'users_admin:plan_list' %}"
+       class="{% if request.resolver_match.url_name in 'plan_list plan_create plan_edit' %}active{% endif %}">
+        💳 Plans
+    </a>
+
+    <h6 class="px-3 text-muted">Accounting Engine</h6>
+
+    <a href="/admin-portal/accounting/regulations/">
+        📜 Regulations
+    </a>
+
+    <a href="/admin-portal/accounting/accounts/">
+        🏦 Chart of Accounts
+    </a>
+
+    <a href="/">← Back to App</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+    <!-- Topbar -->
+    <div class="topbar mb-4 shadow-sm rounded">
+        <div>
+            <strong>System Administration</strong>
+        </div>
+        <div>
+            {{ request.user.email }}
+            |
+            <a href="{% url 'admin_portal:logout' %}" class="text-decoration-none">Logout</a>
+        </div>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+</body>
+
+</html>

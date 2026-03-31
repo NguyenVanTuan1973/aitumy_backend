@@ -1,0 +1,17 @@
+{% extends "admin_portal/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>Nội dung website</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">
+            Lưu
+        </button>
+    </form>
+</div>
+{% endblock %}

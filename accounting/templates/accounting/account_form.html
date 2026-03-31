@@ -1,0 +1,12 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h3>Thêm / Sửa Tài khoản</h3>
+
+<form method="post" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-success">Lưu</button>
+</form>
+
+{% endblock %}

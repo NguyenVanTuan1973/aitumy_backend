@@ -1,0 +1,65 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+<h3>{% if menu %}Sửa{% else %}Thêm{% endif %} Sidebar Menu</h3>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>App Module</label>
+        <select name="app_module" class="form-control">
+            {% for m in modules %}
+            <option value="{{ m.id }}"
+                {% if menu.app_module.id == m.id %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control"
+               value="{{ menu.title }}">
+    </div>
+
+    <div class="mb-3">
+        <label>Code</label>
+        <input type="text" name="code" class="form-control"
+               value="{{ menu.code }}">
+    </div>
+
+    <div class="mb-3">
+        <label>Icon</label>
+        <input type="text" name="icon" class="form-control"
+               value="{{ menu.icon }}">
+    </div>
+
+    <div class="mb-3">
+        <label>Action</label>
+        <input type="text" name="action" class="form-control"
+               value="{{ menu.action }}">
+    </div>
+
+    <div class="mb-3">
+        <label>Module Code</label>
+        <input type="text" name="module_code" class="form-control"
+               value="{{ menu.module_code }}">
+    </div>
+
+    <div class="mb-3">
+        <label>Order</label>
+        <input type="number" name="order" class="form-control"
+               value="{{ menu.order|default:0 }}">
+    </div>
+
+    <div class="form-check mb-3">
+        <input type="checkbox" name="is_active"
+               class="form-check-input"
+               {% if menu.is_active %}checked{% endif %}>
+        <label class="form-check-label">Kích hoạt</label>
+    </div>
+
+    <button class="btn btn-success">Lưu</button>
+</form>
+{% endblock %}

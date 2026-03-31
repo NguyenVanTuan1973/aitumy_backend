@@ -1,0 +1,65 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+
+<h2 class="mb-4">System Dashboard</h2>
+
+<div class="row g-4">
+
+    <!-- USERS -->
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+            <h6>Total Users</h6>
+            <h3>{{ total_users }}</h3>
+            <small>Active: {{ active_users }}</small>
+        </div>
+    </div>
+
+    <!-- ORGANIZATIONS -->
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+            <h6>Organizations</h6>
+            <h3>{{ total_orgs }}</h3>
+            <small>
+                HKD: {{ hkd_count }} |
+                DN: {{ enterprise_count }} |
+                CN: {{ individual_count }}
+            </small>
+        </div>
+    </div>
+
+    <!-- MODULES -->
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+            <h6>Modules</h6>
+            <h3>{{ total_modules }}</h3>
+            <small>Active: {{ active_modules }}</small>
+        </div>
+    </div>
+
+    <!-- PROFILES -->
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+            <h6>Accounting Profiles</h6>
+            <h3>{{ total_profiles }}</h3>
+        </div>
+    </div>
+
+    <!-- DRIVE -->
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+            <h6>User Drives</h6>
+            <h3>{{ total_drives }}</h3>
+        </div>
+    </div>
+
+    <!-- SESSIONS -->
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+            <h6>User Sessions</h6>
+            <h3>{{ total_sessions }}</h3>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

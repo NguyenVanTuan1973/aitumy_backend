@@ -1,0 +1,34 @@
+{% extends "admin_portal/base.html" %}
+{% block content %}
+<h3>Quản lý Sidebar</h3>
+
+<a href="{% url 'appconfig_admin:sidebar_create' %}" class="btn btn-primary mb-3">
+    + Thêm menu
+</a>
+
+<table class="table table-striped">
+<tr>
+    <th>Module</th>
+    <th>Title</th>
+    <th>Action</th>
+    <th>Order</th>
+    <th>Active</th>
+    <th></th>
+</tr>
+
+{% for m in menus %}
+<tr>
+    <td>{{ m.app_module.name }}</td>
+    <td>{{ m.title }}</td>
+    <td>{{ m.action }}</td>
+    <td>{{ m.order }}</td>
+    <td>{{ m.is_active|yesno:"✔,✘" }}</td>
+    <td>
+        <a href="{% url 'appconfig_admin:sidebar_edit' m.id %}">Sửa</a> |
+        <a href="{% url 'appconfig_admin:sidebar_delete' m.id %}"
+           onclick="return confirm('Xóa menu này?')">Xóa</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
