@@ -1,13 +1,80 @@
-from pathlib import Path
+from dotenv import load_dotenv
 import os
+from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / ".env")
+
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [
+    'ttumy.vn',
+    'www.ttumy.vn',
+    'api.ttumy.vn',
+    'app.ttumy.vn',
+]
+
+# ALLOWED_HOSTS = ['*']   # DEV
+
+
+# =========================
+# STATIC & MEDIA CONFIG
+# =========================
+
+TTUMY_STATIC_ROOT = '/home/aitumyon6802/domains/ttumy.vn/public_html/assets'
+TTUMY_MEDIA_ROOT  = '/home/aitumyon6802/domains/ttumy.vn/public_html/media'
+
+# -------- api.ttumy.vn (API) --------
+API_STATIC_ROOT = '/home/aitumyon6802/domains/api.ttumy.vn/public_html/static'
+API_MEDIA_ROOT  = '/home/aitumyon6802/domains/api.ttumy.vn/public_html/media'
+
+# -------- app.ttumy.vn (SPA / file tĩnh) --------
+APP_STATIC_ROOT = '/home/aitumyon6802/domains/app.ttumy.vn/public_html/static'
+APP_MEDIA_ROOT  = '/home/aitumyon6802/domains/app.ttumy.vn/public_html/media'
+
+# Dùng tĩnh cho subdomain hiện tại
+import socket
+current_host = socket.gethostname()  # tạm, bạn có thể set bằng ENV hoặc subdomain
+
+if 'api.ttumy.vn' in current_host:
+    STATIC_ROOT = API_STATIC_ROOT
+    MEDIA_ROOT = API_MEDIA_ROOT
+elif 'app.ttumy.vn' in current_host:
+    STATIC_ROOT = APP_STATIC_ROOT
+    MEDIA_ROOT = APP_MEDIA_ROOT
+else:
+    STATIC_ROOT = TTUMY_STATIC_ROOT
+    MEDIA_ROOT = TTUMY_MEDIA_ROOT
+
+# STATIC_URL = '/static/'
+# MEDIA_URL = '/media/'
+
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# =========================
+# CSRF / CORS (Flutter API)
+# =========================
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.ttumy.vn",
+    "https://ttumy.vn",
+    "https://app.ttumy.vn",
+]
+
+# Nếu Flutter gọi API, CORS headers
+CORS_ALLOWED_ORIGINS = [
+    "https://app.ttumy.vn",
+    "https://ttumy.vn",
+]
 
 
 INSTALLED_APPS = [
@@ -49,7 +116,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     "core.middleware.session_validation.SessionValidationMiddleware",
 ]
 
@@ -131,20 +197,36 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'en-us'
-
-# TIME_ZONE = 'UTC'
-TIME_ZONE = "Asia/Ho_Chi_Minh"
-
+# =========================
+# TIMEZONE / LANGUAGE
+# =========================
+LANGUAGE_CODE = 'vi-vn'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# =========================
+# LOGGING (cơ bản)
+# =========================
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -165,14 +247,6 @@ REST_FRAMEWORK = {
 # =======================================
 #  CORS CONFIG (cho phép Flutter gọi API)
 # =======================================
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:4200",
-    "http://127.0.0.1:4200",
-    "http://127.0.0.1:5500",
-    "http://10.0.2.2:8000",   # Android emulator
-]
 
 scope = [
   "https://www.googleapis.com/auth/drive.file",
@@ -184,8 +258,9 @@ scope = [
 # =========================
 # GOOGLE DRIVE OAUTH
 # =========================
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+GOOGLE_OAUTH_REDIRECT_URI = "postmessage"
 
 GOOGLE_OAUTH_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.email",
@@ -247,4 +322,4 @@ SIMPLE_JWT = {
 # ================================
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "TTUMY <support@ttumy.vn>"
+DEFAULT_FROM_EMAIL = "TTUMY <contact@ttumy.vn>"

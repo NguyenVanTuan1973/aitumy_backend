@@ -13,9 +13,6 @@ def generate_register_pdf(
     # lấy register tương ứng
     register = RegisterEngine.get_register(form_code)
 
-    # filter dữ liệu
-    rows = register.filter_rows(rows)
-
     # khởi tạo renderer
     renderer = BasePDFRenderer(file_path)
 

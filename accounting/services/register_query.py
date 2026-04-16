@@ -14,8 +14,8 @@ def get_gspread_client(user):
         token=drive.access_token,
         refresh_token=drive.refresh_token,
         token_uri="https://oauth2.googleapis.com/token",
-        client_id=settings.GOOGLE_OAUTH_CLIENT_ID,
-        client_secret=settings.GOOGLE_OAUTH_CLIENT_SECRET,
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
         scopes=[
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
@@ -78,6 +78,7 @@ def query_sheet_data(
         if start_date <= doc_date <= end_date:
             results.append(r)
 
+    print('excel_date_to_date', results)
     return results
 
 def parse_sheet_date(value):

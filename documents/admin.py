@@ -3,7 +3,7 @@ from django.utils.html import format_html
 
 from .extract_utils import extract_form_template_data
 
-from .models import DocumentMetadata, DocumentGroup, GroupDocument, FormTemplate, RegisterMapping
+from .models import DocumentMetadata, DocumentGroup, GroupDocument, FormTemplate, RegisterMapping, AccountingBook
 
 
 # ------------------------------
@@ -213,3 +213,87 @@ class FormTemplateAdmin(admin.ModelAdmin):
 @admin.register(RegisterMapping)
 class RegisterMappingAdmin(admin.ModelAdmin):
     list_display = ("id", "plan_code", "flow", "form_template", "is_active")
+
+@admin.register(AccountingBook)
+class AccountingBookAdmin(admin.ModelAdmin):
+
+    # hiển thị chính
+    list_display = (
+        "id",
+        "code",
+        "name",
+        "plan",
+        "book_type",
+        "parent_book",
+        "period_type",
+        "is_active",
+        "display_order",
+    )
+
+    # filter bên phải
+    list_filter = (
+        "plan",
+        "book_type",
+        "period_type",
+        "is_active",
+    )
+
+    # search
+    search_fields = (
+        "code",
+        "name",
+        "doc_register",
+    )
+
+    # sắp xếp
+    ordering = ("display_order",)
+
+    # số dòng mỗi trang
+    list_per_page = 20
+
+    # click vào đâu để vào detail
+    list_display_links = ("code", "name")
+
+    # field readonly
+    readonly_fields = ("created_at",)
+
+    # UI form đẹp hơn
+    fieldsets = (
+        ("Thông tin chính", {
+            "fields": (
+                "code",
+                "name",
+                "plan",
+                "regulation",
+                "book_type",
+                "parent_book",
+            )
+        }),
+
+        ("Cấu hình dữ liệu", {
+            "fields": (
+                "doc_register",
+                "account_codes",
+                "filter_conditions",
+            )
+        }),
+
+        ("Kỳ & Template", {
+            "fields": (
+                "period_type",
+                "templates",
+            )
+        }),
+
+        ("Hiển thị", {
+            "fields": (
+                "display_order",
+                "is_default",
+                "is_active",
+            )
+        }),
+
+        ("Hệ thống", {
+            "fields": ("created_at",)
+        }),
+    )

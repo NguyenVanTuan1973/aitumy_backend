@@ -3,46 +3,101 @@
 
 {% block content %}
 <div class="container section">
-    <h2 class="text-center">Sản phẩm & Gói dịch vụ</h2>
 
-    <div class="row mt-5">
+    <!-- HERO DOWNLOAD -->
+    <div class="text-center py-5">
+        <h1 class="fw-bold">Phần mềm kế toán Hộ kinh doanh TTuMy</h1>
+        <p class="text-muted mt-3">
+            Quản lý thu chi, in sổ sách theo quy định. Dễ dùng - Tiết kiệm - Tự động hóa.
+        </p>
 
+        <div class="mt-4">
+            <a href="/media/apk/ttumy-v1.0.0.apk" class="btn btn-primary btn-lg px-5">
+                📥 Tải App Android (v1.0.0)
+            </a>
+        </div>
+
+        <p class="mt-3 text-danger small">
+            ⚠️ Cài đặt từ file APK (bật "Cho phép nguồn không xác định")
+        </p>
+    </div>
+
+    <!-- DIVIDER -->
+    <hr class="my-5">
+
+    <!-- PRICING / PLANS -->
+    <h2 class="text-center mb-5">Gói dịch vụ</h2>
+
+    <div class="row g-4">
+
+        <!-- PLAN 1 -->
         <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Cá nhân, Hộ kinh doanh không chịu thuế</h5>
-                <ul>
+            <div class="card h-100 shadow-sm p-3">
+                <h5 class="fw-bold">Cá nhân, HKD không chịu thuế</h5>
+                <ul class="mt-3">
                     <li>Quản lý thu chi cơ bản</li>
                     <li>Giới hạn AI</li>
-                    <li>Tạo, in sổ theo quy định</li>
-                    <li>Lưu dữ liệu vào Clound của khách hàng</li>
+                    <li>Tạo & in sổ theo quy định</li>
+                    <li>Lưu dữ liệu Cloud</li>
                 </ul>
+
+                <div class="mt-auto">
+                    <button class="btn btn-outline-primary w-100">
+                        Đăng ký tư vấn
+                    </button>
+                </div>
             </div>
         </div>
 
+        <!-- PLAN 2 (highlight) -->
         <div class="col-md-4">
-            <div class="card p-3 border-primary">
-                <h5>Hộ kinh doanh chịu thuế</h5>
-                <ul>
-                    <li>Biểu đồ Doanh thu, chi phí</li>
-                    <li>Quản lý thu, chi theo quy đinh</li>
-                    <li>Tạo, in sổ theo quy đinh</li>
-                    <li>Lưu dữ liệu vào Clound của khách hàng</li>
+            <div class="card h-100 shadow border-primary p-3">
+                <h5 class="fw-bold text-primary">HKD chịu thuế (Khuyên dùng)</h5>
+                <ul class="mt-3">
+                    <li>Biểu đồ doanh thu, chi phí</li>
+                    <li>Quản lý thu chi theo quy định</li>
+                    <li>Tạo & in sổ theo chuẩn</li>
+                    <li>Lưu dữ liệu Cloud</li>
                 </ul>
+
+                <div class="mt-auto">
+                    <button class="btn btn-primary w-100">
+                        Đăng ký tư vấn
+                    </button>
+                </div>
             </div>
         </div>
 
+        <!-- PLAN 3 -->
         <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Doanh nghiệp</h5>
-                <ul>
-                    <li>Hạch toán thu, chi</li>
+            <div class="card h-100 shadow-sm p-3">
+                <h5 class="fw-bold">Doanh nghiệp</h5>
+                <ul class="mt-3">
+                    <li>Hạch toán thu chi</li>
                     <li>Quản lý dòng tiền</li>
-                    <li>Quản lý kho hàng</li>
-                    <li>Lưu dữ liệu vào Clound của khách hàng</li>
+                    <li>Quản lý kho</li>
+                    <li>Lưu dữ liệu Cloud</li>
                 </ul>
+
+                <div class="mt-auto">
+                    <button class="btn btn-outline-primary w-100">
+                        Liên hệ tư vấn
+                    </button>
+                </div>
             </div>
         </div>
 
     </div>
+
+    <!-- CTA BOTTOM -->
+    <div class="text-center mt-5 py-4 bg-light rounded">
+        <h4>Bắt đầu sử dụng TTuMy ngay hôm nay</h4>
+        <p class="text-muted">Tải app và trải nghiệm miễn phí</p>
+
+        <a href="/media/apk/ttumy-v1.0.0.apk" class="btn btn-success btn-lg px-5">
+            🚀 Tải ngay
+        </a>
+    </div>
+
 </div>
 {% endblock %}

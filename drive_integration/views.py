@@ -1,40 +1,32 @@
 import io
-import json
 import requests
 
 import datetime
 
 from django.conf import settings
 from django.utils import timezone
-from django.http import JsonResponse
-from django.utils.encoding import force_str
-from django.views.decorators.csrf import csrf_exempt
-from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
 from googleapiclient.http import MediaIoBaseUpload
-from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from users.utils.google_oauth import exchange_code_for_tokens
-from users.models import User, UserDrive, DriveFolder, UserSession
+from users.models import User, UserDrive, DriveFolder, UserSession, OrganizationMember
 import uuid
-import os
 from documents.extract_utils import extract_from_pdf
-from documents.models import DocumentMetadata
+from documents.models import DocumentMetadata, RegisterMapping
 
 from .serializers import CreateDocumentSerializer
 from .services.drive_status_service import DriveStatusService
 from .services.drive_workspace_service import DriveWorkspaceService
 from .services.get_sheet_data_router import get_sheet_data_by_user, get_user_plan_code
-from .services.google_drive_service import init_tumy_structure
 from .services.google_oauth_service import GoogleOAuthService
-# from .services.google_sheet_header_service import init_sheet_headers
-# from .services.google_sheet_get_data_service import ensure_free_user_sheet
-from googleapiclient.discovery import build
 
+from googleapiclient.discovery import build
 from .utils.period_utils import get_period_range
+from .utils.resolve_doc_register import resolve_doc_register
+
 
 
 class GoogleOAuth2CallbackView(APIView):
@@ -201,7 +193,6 @@ class DriveOAuthCallbackView(APIView):
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "token_expiry": expiry,
-                # drive_folder_id CHƯA có ở đây
             }
         )
 
@@ -239,8 +230,8 @@ class DriveInitFolderView(APIView):
                 "https://oauth2.googleapis.com/token",
                 data={
                     "code": server_auth_code,
-                    "client_id": settings.GOOGLE_OAUTH_CLIENT_ID,
-                    "client_secret": settings.GOOGLE_OAUTH_CLIENT_SECRET,
+                    "client_id": settings.GOOGLE_CLIENT_ID,
+                    "client_secret": settings.GOOGLE_CLIENT_SECRET,
                     "redirect_uri": "http://localhost:8000/api/drive/oauth/callback/",
                     "grant_type": "authorization_code",
                 },
@@ -486,7 +477,7 @@ class CreateDocumentAPIView(APIView):
     # =====================================================
 
     def post(self, request):
-
+        import json
         payload_raw = request.data.get("payload")
 
         if not payload_raw:
@@ -497,6 +488,7 @@ class CreateDocumentAPIView(APIView):
 
         try:
             payload = json.loads(payload_raw)
+            
         except Exception:
             return Response(
                 {"error": "PAYLOAD_INVALID_JSON"},
@@ -547,8 +539,8 @@ class CreateDocumentAPIView(APIView):
             token=user_drive.access_token,
             refresh_token=user_drive.refresh_token,
             token_uri="https://oauth2.googleapis.com/token",
-            client_id=settings.GOOGLE_OAUTH_CLIENT_ID,
-            client_secret=settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            client_id=settings.GOOGLE_CLIENT_ID,
+            client_secret=settings.GOOGLE_CLIENT_SECRET,
         )
 
         drive_service = build("drive", "v3", credentials=creds)
@@ -698,6 +690,17 @@ class CreateDocumentAPIView(APIView):
         # =====================================================
         # DATA SOURCE
         # =====================================================
+        membership = (
+            OrganizationMember.objects
+            .select_related("organization__subscription__plan")
+            .filter(user=request.user, is_active=True)
+            .first()
+        )
+
+        plan_code = None
+
+        if membership and membership.organization.subscription:
+            plan_code = membership.organization.subscription.plan.code
 
         normalized_values = []
 
@@ -714,6 +717,18 @@ class CreateDocumentAPIView(APIView):
 
                 for col in self.DATA_SOURCE_COLUMNS:
                     row_dict[col] = row.get(col, 0)
+
+            # ============================================
+            # 🔥 MAP DOC REGISTER TẠI ĐÂY
+            # ============================================
+            job_code = row_dict.get("job_code")
+
+            doc_register = resolve_doc_register(
+                plan_code=plan_code,
+                job_code=job_code
+            )
+
+            row_dict["doc_register"] = doc_register
 
             row_dict["metadata_code"] = doc_id
             row_dict["set_id"] = set_id
@@ -747,6 +762,8 @@ class CreateDocumentAPIView(APIView):
 
             normalized_values.append(final_row)
 
+        import json
+
         resp = self.append_sheet(
             spreadsheet_id,
             "data_source",
@@ -779,7 +796,6 @@ class CreateDocumentAPIView(APIView):
             },
             status=200,
         )
-
 
 class GetDataSheetAPIView(APIView):
     """
@@ -1003,519 +1019,4 @@ class PublicSheetAPIView(APIView):
                 {"error": str(e)},
                 status=500
             )
-
-@csrf_exempt
-def upload_file_view(request):
-
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Only POST allowed'}, status=405)
-
-    try:
-        # -------------------------------------------
-        # 1) LẤY DỮ LIỆU TỪ FLUTTER
-        # -------------------------------------------
-        access_token = request.POST.get('access_token')
-        metadata_raw = request.POST.get('metadata')
-        file = request.FILES.get('file')
-
-        if not metadata_raw:
-            return JsonResponse({"error": "Missing metadata"}, status=400)
-
-        metadata_dict = json.loads(metadata_raw)
-
-        # folder dạng: "chung_tu_ke_toan/tien_te"
-        folder_path = metadata_dict.get("folder", "")
-        folder_name = folder_path.split("/")[-1].strip()
-
-        # -------------------------------------------
-        # 2) KIỂM TRA TOKEN GOOGLE
-        # -------------------------------------------
-        if not access_token or not file:
-            return JsonResponse(
-                {'error': 'access_token + file are required'},
-                status=400
-            )
-
-        google_info_url = "https://www.googleapis.com/oauth2/v3/tokeninfo"
-        token_check = requests.get(f"{google_info_url}?access_token={access_token}")
-
-        if token_check.status_code != 200:
-            return JsonResponse({
-                'error': 'Invalid or expired access_token',
-                'status': token_check.text
-            }, status=401)
-
-        # -------------------------------------------
-        # 3) LẤY FOLDER CHA VÀ FOLDER CON TỪ DB
-        # -------------------------------------------
-        user = request.user if request.user.is_authenticated else None
-        user_drive = UserDrive.objects.filter(user=user).first()
-
-        if not user_drive:
-            return JsonResponse({"error": "UserDrive not found"}, status=404)
-
-        # Folder cha = chung_tu_ke_toan
-        parent_folder_id = user_drive.drive_folder_id
-
-        # Folder con = tien_te, vat_tu, ...
-        target_folder = DriveFolder.objects.filter(
-            drive=user_drive,
-            name=folder_name
-        ).first()
-
-        if not target_folder:
-            return JsonResponse({
-                "error": "DriveFolder not found for name: " + folder_name
-            }, status=404)
-
-        sub_folder_id = target_folder.folder_id
-
-        # -------------------------------------------
-        # 4) LƯU TẠM FILE
-        # -------------------------------------------
-        temp_dir = "drive_uploads/temp/"
-        os.makedirs(temp_dir, exist_ok=True)
-        temp_path = os.path.join(temp_dir, file.name)
-
-        with open(temp_path, 'wb+') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
-
-        # -------------------------------------------
-        # 5) EXTRACT PDF
-        # -------------------------------------------
-        extracted_text = ""
-        if file.name.lower().endswith(".pdf"):
-            try:
-                extracted_text = extract_from_pdf(temp_path)
-            except Exception as e:
-                print("⚠️ PDF extract error:", e)
-
-        # -------------------------------------------
-        # 6) UPLOAD GOOGLE DRIVE
-        #    ✔ chỉ upload vào folder con (sub_folder_id)
-        #    ✔ folder cha chỉ dùng lưu DB, không upload vào cha
-        # -------------------------------------------
-        metadata = {
-            "name": file.name,
-            "parents": [sub_folder_id]  # Upload đúng folder con
-        }
-
-        boundary = uuid.uuid4().hex
-        delimiter = f'--{boundary}'
-        close_delim = f'--{boundary}--'
-
-        body = (
-            f'{delimiter}\r\n'
-            'Content-Type: application/json; charset=UTF-8\r\n\r\n'
-            f'{json.dumps(metadata)}\r\n'
-            f'{delimiter}\r\n'
-            f'Content-Type: {file.content_type or "application/octet-stream"}\r\n\r\n'
-        ).encode() + open(temp_path, 'rb').read() + f'\r\n{close_delim}'.encode()
-
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Content-Type': f'multipart/related; boundary={boundary}'
-        }
-
-        upload_url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart'
-        response = requests.post(upload_url, headers=headers, data=body)
-
-        if response.status_code not in [200, 201]:
-            return JsonResponse({
-                'error': 'Upload to Drive failed',
-                'details': response.text
-            }, status=500)
-
-        data = response.json()
-        file_id = data.get("id")
-
-        # -------------------------------------------
-        # 7) LƯU METADATA
-        # -------------------------------------------
-        doc = DocumentMetadata.objects.create(
-            user=user,
-            original_filename=metadata_dict.get("file_name"),
-            file_name=metadata_dict.get("file_name"),
-            file_format=file.content_type,
-            file_size=file.size,
-
-            doc_type=metadata_dict.get("template"),
-            doc_no=metadata_dict["metadata"].get("doc_no"),
-            doc_date=metadata_dict["metadata"].get("doc_date"),
-            description=metadata_dict["metadata"].get("title"),
-            ocr_text=metadata_dict.get("ocr_text") or extracted_text,
-
-            # GOOGLE DRIVE
-            drive_file_id=file_id,
-            drive_link=f"https://drive.google.com/file/d/{file_id}/view",
-
-            # Lưu cả đường dẫn đầy đủ
-            drive_path=folder_path,
-
-            # ✔ LƯU FOLDER CHA VÀ FOLDER CON
-            drive_parent_folder_id=parent_folder_id,
-            drive_sub_folder_id=sub_folder_id,
-
-            drive_mime=file.content_type,
-        )
-
-        # -------------------------------------------
-        # 8) XÓA FILE TẠM
-        # -------------------------------------------
-        try:
-            os.remove(temp_path)
-        except:
-            pass
-
-        return JsonResponse({
-            "message": "Upload thành công",
-            "file_id": file_id,
-            "folder_parent": parent_folder_id,
-            "folder_sub": sub_folder_id,
-            "metadata_id": doc.id
-        })
-
-    except Exception as e:
-
-        return JsonResponse({"error": str(e)}, status=500)
-
-@csrf_exempt
-def create_folder_view(request):
-
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
-
-    try:
-        data = json.loads(request.body)
-        access_token = data.get('access_token')
-        id_token = data.get('id_token')
-
-        if not access_token:
-            return JsonResponse({'error': 'Missing access_token'}, status=400)
-
-        # =============================
-        # 1️⃣ Xác thực người dùng Google
-        # =============================
-        verify = requests.get(
-            "https://www.googleapis.com/oauth2/v1/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-        if verify.status_code != 200:
-            return JsonResponse({'error': 'Invalid access_token'}, status=400)
-
-        user_info = verify.json()
-        email = user_info.get("email")
-
-
-        # =============================
-        # 2️⃣ Lấy hoặc tạo User
-        # =============================
-        user, created = User.objects.get_or_create(email=email)
-
-
-        drive_api_url = "https://www.googleapis.com/drive/v3/files"
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
-        }
-
-        # =============================
-        # 3️⃣ Kiểm tra / tạo thư mục gốc
-        # =============================
-        query = (
-            "name='chung_tu_ke_toan' and "
-            "mimeType='application/vnd.google-apps.folder' and "
-            "'root' in parents and trashed=false"
-        )
-        search_resp = requests.get(
-            f"{drive_api_url}?q={requests.utils.quote(query)}&fields=files(id,name)",
-            headers=headers
-        )
-
-        if search_resp.status_code == 200 and search_resp.json().get("files"):
-            folder = search_resp.json()["files"][0]
-            root_folder_id = folder["id"]
-
-        else:
-            create_resp = requests.post(
-                drive_api_url,
-                headers=headers,
-                json={
-                    "name": "chung_tu_ke_toan",
-                    "mimeType": "application/vnd.google-apps.folder",
-                    "parents": ["root"]
-                }
-            )
-            if create_resp.status_code not in [200, 201]:
-                return JsonResponse({'error': 'Failed to create root folder', 'details': create_resp.text}, status=400)
-            root_folder_id = create_resp.json()["id"]
-
-
-        # =============================
-        # 4️⃣ Lưu vào UserDrive
-        # =============================
-        user_drive, _ = UserDrive.objects.update_or_create(
-            user=user,
-            defaults={
-                "drive_folder_id": root_folder_id,
-                "access_token": access_token,
-                "token_expiry": timezone.now() + timezone.timedelta(hours=1)
-            }
-        )
-
-        # =============================
-        # 5️⃣ Kiểm tra / tạo các thư mục con
-        # =============================
-        subfolders = [
-            "lao_dong_tien_luong",
-            "hang_ton_kho",
-        ]
-
-        created_folders = []
-        for name in subfolders:
-            # 🔍 kiểm tra đã tồn tại trên Drive chưa
-            query_sub = (
-                f"name='{name}' and "
-                f"mimeType='application/vnd.google-apps.folder' and "
-                f"'{root_folder_id}' in parents and trashed=false"
-            )
-            check_sub = requests.get(
-                f"{drive_api_url}?q={requests.utils.quote(query_sub)}&fields=files(id,name)",
-                headers=headers
-            )
-
-            files = check_sub.json().get("files", []) if check_sub.status_code == 200 else []
-            if files:
-                sub_id = files[0]["id"]
-
-            else:
-                # 🆕 tạo mới thư mục con
-                create_sub = requests.post(
-                    drive_api_url,
-                    headers=headers,
-                    json={
-                        "name": name,
-                        "mimeType": "application/vnd.google-apps.folder",
-                        "parents": [root_folder_id]
-                    }
-                )
-                if create_sub.status_code not in [200, 201]:
-
-                    continue
-                sub_id = create_sub.json()["id"]
-
-
-            # 💾 Lưu vào bảng DriveFolder
-            DriveFolder.objects.update_or_create(
-                drive=user_drive,
-                name=name,
-                defaults={
-                    "folder_id": sub_id,
-                    "parent_folder": None,
-                }
-            )
-
-            created_folders.append({
-                "name": name,
-                "folder_id": sub_id
-            })
-
-        # =============================
-        # 6️⃣ Phản hồi kết quả
-        # =============================
-        # Chuyển list → dict
-        folders_dict = {item["name"]: item["folder_id"] for item in created_folders}
-
-        return JsonResponse({
-            "message": "Tạo đầy đủ thư mục thành công",
-            "root_folder_id": root_folder_id,
-            "user_email": email,
-            "subfolders": created_folders
-        }, status=200)
-
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-# API tạo Folder, file sheet
-@csrf_exempt
-def create_folder_sheet_view(request):
-
-    if request.method != "POST":
-        return JsonResponse({"error": "Only POST allowed"}, status=405)
-
-    try:
-        data = json.loads(request.body)
-        access_token = data.get("access_token")
-
-        if not access_token:
-            return JsonResponse({"error": "Missing access_token"}, status=400)
-
-        # =============================
-        # 1️⃣ Verify Google User
-        # =============================
-        verify = requests.get(
-            "https://www.googleapis.com/oauth2/v1/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        if verify.status_code != 200:
-            return JsonResponse({"error": "Invalid access_token"}, status=400)
-
-        user_info = verify.json()
-        email = user_info.get("email")
-
-        # =============================
-        # 2️⃣ Get / Create User
-        # =============================
-        user, created = User.objects.get_or_create(email=email)
-
-        drive_api = "https://www.googleapis.com/drive/v3/files"
-        sheets_api = "https://sheets.googleapis.com/v4/spreadsheets"
-
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-        }
-
-        # =============================
-        # 3️⃣ Ensure Folder: chung_tu_ho_kinh_doanh
-        # =============================
-        FOLDER_NAME = "chung_tu_ho_kinh_doanh"
-
-        query = (
-            f"name='{FOLDER_NAME}' and "
-            "mimeType='application/vnd.google-apps.folder' and "
-            "'root' in parents and trashed=false"
-        )
-
-        search = requests.get(
-            f"{drive_api}?q={requests.utils.quote(query)}&fields=files(id,name)",
-            headers=headers,
-        )
-
-        if search.status_code == 200 and search.json().get("files"):
-            root_folder_id = search.json()["files"][0]["id"]
-
-        else:
-            create_folder = requests.post(
-                drive_api,
-                headers=headers,
-                json={
-                    "name": FOLDER_NAME,
-                    "mimeType": "application/vnd.google-apps.folder",
-                    "parents": ["root"],
-                },
-            )
-            if create_folder.status_code not in (200, 201):
-                return JsonResponse(
-                    {"error": "Create folder failed", "detail": create_folder.text},
-                    status=400,
-                )
-
-            root_folder_id = create_folder.json()["id"]
-
-
-        # =============================
-        # 4️⃣ Lưu vào UserDrive  ✅ (GIỐNG API CŨ)
-        # =============================
-        user_drive, _ = UserDrive.objects.update_or_create(
-            user=user,
-            defaults={
-                "drive_folder_id": root_folder_id,
-                "access_token": access_token,
-                "token_expiry": timezone.now() + timezone.timedelta(hours=1)
-            }
-        )
-
-        # =============================
-        # 5️⃣ Ensure Sheet: so_thu_chi_hkd
-        # =============================
-        SHEET_NAME = "so_thu_chi_hkd"
-
-        query_sheet = (
-            f"name='{SHEET_NAME}' and "
-            f"mimeType='application/vnd.google-apps.spreadsheet' and "
-            f"'{root_folder_id}' in parents and trashed=false"
-        )
-
-        search_sheet = requests.get(
-            f"{drive_api}?q={requests.utils.quote(query_sheet)}&fields=files(id,name)",
-            headers=headers,
-        )
-
-        if search_sheet.status_code == 200 and search_sheet.json().get("files"):
-            spreadsheet_id = search_sheet.json()["files"][0]["id"]
-
-
-        else:
-            create_sheet = requests.post(
-                drive_api,
-                headers=headers,
-                json={
-                    "name": SHEET_NAME,
-                    "mimeType": "application/vnd.google-apps.spreadsheet",
-                    "parents": [root_folder_id],
-                },
-            )
-
-            if create_sheet.status_code not in (200, 201):
-                return JsonResponse(
-                    {"error": "Create sheet failed", "detail": create_sheet.text},
-                    status=400,
-                )
-
-            spreadsheet_id = create_sheet.json()["id"]
-
-            # Thêm tab Thu / Chi
-            requests.post(
-                f"{sheets_api}/{spreadsheet_id}:batchUpdate",
-                headers=headers,
-                json={
-                    "requests": [
-                        {"addSheet": {"properties": {"title": "so_doanh_thu"}}},
-                        {"addSheet": {"properties": {"title": "so_chi_phi"}}},
-                    ]
-                },
-            )
-
-        # =============================
-        # 6️⃣ Lưu vào DriveFolder  ✅
-        # =============================
-        DriveFolder.objects.update_or_create(
-            drive=user_drive,
-            name=SHEET_NAME,
-            defaults={
-                "folder_id": spreadsheet_id,   # vẫn lưu id Drive
-                "parent_folder": None,
-            },
-        )
-
-        creds = Credentials(
-            token=access_token,
-            scopes=[
-                "https://www.googleapis.com/auth/spreadsheets",
-                "https://www.googleapis.com/auth/drive",
-            ],
-        )
-
-        # =============================
-        # 7️⃣ Response
-        # =============================
-        return JsonResponse(
-            {
-                "message": "Tạo folder + sheet HKD thành công",
-                "user_email": email,
-                "root_folder_id": root_folder_id,
-                "sheet": {
-                    "name": SHEET_NAME,
-                    "spreadsheet_id": spreadsheet_id,
-                },
-            },
-            status=200,
-        )
-
-    except Exception as e:
-
-        return JsonResponse({"error": str(e)}, status=500)
 

@@ -18,34 +18,34 @@ class GoogleOAuthService:
     # ==================================================
     # 1️⃣ BUILD GOOGLE OAUTH URL (LOGIN / CONSENT)
     # ==================================================
-    def build_auth_url(self, *, user, scopes, mode: str) -> str:
-        """
-        Build Google OAuth consent URL
-        """
-
-        state_payload = {
-            "user_id": user.id,
-            "mode": mode,
-        }
-
-        state = base64.urlsafe_b64encode(
-            json.dumps(state_payload).encode()
-        ).decode()
-
-        flow = Flow.from_client_secrets_file(
-            settings.GOOGLE_OAUTH_CLIENT_SECRET_FILE,
-            scopes=scopes,
-            redirect_uri=settings.GOOGLE_OAUTH_REDIRECT_URI,
-        )
-
-        auth_url, _ = flow.authorization_url(
-            access_type="offline",
-            include_granted_scopes="true",
-            prompt="consent",
-            state=state,
-        )
-
-        return auth_url
+    # def build_auth_url(self, *, user, scopes, mode: str) -> str:
+    #     """
+    #     Build Google OAuth consent URL
+    #     """
+    #
+    #     state_payload = {
+    #         "user_id": user.id,
+    #         "mode": mode,
+    #     }
+    #
+    #     state = base64.urlsafe_b64encode(
+    #         json.dumps(state_payload).encode()
+    #     ).decode()
+    #
+    #     flow = Flow.from_client_secrets_file(
+    #         settings.GOOGLE_OAUTH_CLIENT_SECRET_FILE,
+    #         scopes=scopes,
+    #         redirect_uri=settings.GOOGLE_OAUTH_REDIRECT_URI,
+    #     )
+    #
+    #     auth_url, _ = flow.authorization_url(
+    #         access_type="offline",
+    #         include_granted_scopes="true",
+    #         prompt="consent",
+    #         state=state,
+    #     )
+    #
+    #     return auth_url
 
     # ==================================================
     # 2️⃣ EXCHANGE CODE → TOKEN (CALLBACK)
@@ -92,6 +92,31 @@ class GoogleOAuthService:
         )
 
         if response.status_code != 200:
+            # LOG LỖI RA ĐỂ KIỂM TRA
+            print(f"Google Refresh Error: {response.text}")
+            raise Exception("FAILED_TO_REFRESH_GOOGLE_ACCESS_TOKEN")
+
+        data = response.json()
+        return {
+            "access_token": data["access_token"],
+            "expires_at": timezone.now() + timedelta(seconds=data["expires_in"]),
+        }
+
+    """
+    @classmethod
+    def refresh_access_token(cls, refresh_token: str):
+        response = requests.post(
+            cls.TOKEN_URL,
+            data={
+                "client_id": settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "refresh_token": refresh_token,
+                "grant_type": "refresh_token",
+            },
+            timeout=10,
+        )
+
+        if response.status_code != 200:
             raise Exception("FAILED_TO_REFRESH_GOOGLE_ACCESS_TOKEN")
 
         data = response.json()
@@ -101,6 +126,8 @@ class GoogleOAuthService:
             "expires_at": timezone.now() + timedelta(seconds=data["expires_in"]),
             "scope": data.get("scope"),
         }
+        
+    """
 
     # ==================================================
     # 4️⃣ GET USER CREDENTIALS (🔥 QUAN TRỌNG 🔥)
@@ -136,7 +163,7 @@ class GoogleOAuthService:
             token=user_drive.access_token,
             refresh_token=user_drive.refresh_token,
             token_uri=cls.TOKEN_URL,
-            client_id=settings.GOOGLE_OAUTH_CLIENT_ID,
-            client_secret=settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            client_id=settings.GOOGLE_CLIENT_ID,
+            client_secret=settings.GOOGLE_CLIENT_SECRET,
         )
 

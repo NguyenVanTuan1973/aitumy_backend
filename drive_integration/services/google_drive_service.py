@@ -22,8 +22,8 @@ def get_user_credentials(user):
         token=drive.access_token,
         refresh_token=drive.refresh_token,
         token_uri="https://oauth2.googleapis.com/token",
-        client_id=settings.GOOGLE_OAUTH_CLIENT_ID,
-        client_secret=settings.GOOGLE_OAUTH_CLIENT_SECRET,
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
         scopes=[
             "https://www.googleapis.com/auth/drive.file",
             "https://www.googleapis.com/auth/spreadsheets"
@@ -155,7 +155,7 @@ def init_tumy_structure(user, organization):
     root_folder_id = ensure_folder(
         drive_service,
         None,
-        "TuMy_Accounting"
+        "Ttumy_Accounting"
     )
 
     # 2️⃣ Folder năm

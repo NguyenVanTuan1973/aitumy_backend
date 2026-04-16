@@ -6,7 +6,7 @@ from drive_integration.google_client import GoogleDriveClient
 
 from .google_oauth_service import GoogleOAuthService
 
-ROOT_FOLDER_NAME = "TuMy_Accounting"
+ROOT_FOLDER_NAME = "Ttumy_Accounting"
 
 
 class DriveWorkspaceService:

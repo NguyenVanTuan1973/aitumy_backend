@@ -12,4 +12,5 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path("webcontent/<slug:key>/", views.web_content_detail, name='webcontent'),
     path('guest-slider/', views.guest_slider, name='guest-slider'),
+    path('download/', views.download_app, name='download_app'),
 ]

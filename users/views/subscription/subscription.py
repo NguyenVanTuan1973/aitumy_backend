@@ -1,3 +1,4 @@
+from dateutil.utils import today
 from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -5,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.utils import timezone
 from datetime import timedelta
 from users.models import User, UserDrive, Module, OrganizationMember, Subscription, Plan, OrganizationModule
+
 
 
 # Đăng ký ORG, Module
@@ -38,8 +40,114 @@ class UpgradeSubscriptionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        try:
+            # =========================
+            # 1. VALIDATE INPUT
+            # =========================
+            plan_code = request.data.get("plan", "").lower()
+
+            VALID_PLANS = ["hkd", "hkd_plus", "hkd_pro"]
+
+            if plan_code not in VALID_PLANS:
+                return Response({"detail": "Invalid plan"}, status=400)
+
+            # =========================
+            # 2. GET ORGANIZATION
+            # =========================
+            member = (
+                OrganizationMember.objects
+                .filter(user=request.user, is_active=True)
+                .select_related("organization")
+                .first()
+            )
+
+            if not member:
+                return Response({"detail": "No organization"}, status=404)
+
+            if member.role != "OWNER":
+                return Response({"detail": "Only owner can upgrade"}, status=403)
+
+            organization = member.organization
+
+            # =========================
+            # 3. GET PLAN
+            # =========================
+            plan = Plan.objects.filter(
+                code__iexact=plan_code,
+                is_active=True
+            ).first()
+
+            if not plan:
+                return Response({"detail": "Plan not found"}, status=404)
+
+            # =========================
+            # 4. TRANSACTION BLOCK
+            # =========================
+            with transaction.atomic():
+
+                subscription, created = Subscription.objects.get_or_create(
+                    organization=organization,
+                    defaults={
+                        "plan": plan,
+                        "current_period_start": timezone.now().date(),
+                        "current_period_end": timezone.now().date() + timedelta(days=30),
+                        "status": Subscription.STATUS_ACTIVE,
+                    }
+                )
+
+                old_plan = subscription.plan
+
+                # 🚀 UPDATE SUBSCRIPTION
+                subscription.plan = plan
+                subscription.status = Subscription.STATUS_ACTIVE
+                subscription.current_period_start = timezone.now().date()
+
+                if plan.code.lower() == "hkd":
+                    subscription.current_period_end = timezone.now().date() + timedelta(days=365)
+                else:
+                    subscription.current_period_end = timezone.now().date() + timedelta(days=30)
+
+                subscription.save()
+
+                # 🔥 UPDATE ORGANIZATION (QUAN TRỌNG)
+                organization.mark_active()
+
+            # =========================
+            # 5. APPLY MODULE (OUTSIDE TRANSACTION)
+            # =========================
+            try:
+                apply_plan_modules(organization, plan.code.lower())
+            except Exception as e:
+                print("❌ APPLY MODULE ERROR:", str(e))
+                # ❗ không fail API
+
+            # =========================
+            # 6. RESPONSE
+            # =========================
+            return Response({
+                "detail": "Upgraded successfully",
+                "old_plan": old_plan.code if old_plan else None,
+                "new_plan": plan.code,
+                "current_period_end": subscription.current_period_end,
+            })
+
+        except Exception as e:
+            print("❌ UPGRADE ERROR:", str(e))
+            return Response(
+                {"detail": "Upgrade failed", "error": str(e)},
+                status=500
+            )
+
+"""
+class UpgradeSubscriptionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
 
         plan_code = request.data.get("plan")
+
+        print(request.data)
+
 
         VALID_PLANS = ["hkd", "hkd_plus", "hkd_pro"]
 
@@ -88,7 +196,8 @@ class UpgradeSubscriptionView(APIView):
             subscription.current_period_start = timezone.now().date()
 
             if plan.code.lower() == "hkd":
-                subscription.current_period_end = None
+                today = timezone.now().date()
+                subscription.current_period_end = today + timedelta(days=365)
             else:
                 subscription.current_period_end = (
                     timezone.now().date() + timedelta(days=30)
@@ -96,8 +205,17 @@ class UpgradeSubscriptionView(APIView):
 
             subscription.save()
 
+            # 🔥 FIX 1: update organization
+            member.organization.status = "active"
+            member.organization.save()
+
             # 🔥 Sync module
+            # apply_plan_modules(member.organization, plan.code.lower())
+        # 🔥 FIX 2: chạy ngoài transaction
+        try:
             apply_plan_modules(member.organization, plan.code.lower())
+        except Exception as e:
+            print("ERROR apply_plan_modules:", str(e))
 
         return Response({
             "detail": "Upgraded successfully",
@@ -105,6 +223,7 @@ class UpgradeSubscriptionView(APIView):
             "new_plan": plan.code,
             "current_period_end": subscription.current_period_end,
         })
+"""
 
 class CancelSubscriptionView(APIView):
     permission_classes = [IsAuthenticated]
@@ -148,6 +267,43 @@ class CancelSubscriptionView(APIView):
             org_module.is_enabled = org_module.module.code in allowed
             org_module.save()
 
+def apply_plan_modules(organization, plan):
+
+    PLAN_MODULE_MAP = {
+        "hkd": ["DASHBOARD"],
+        "hkd_plus": ["DASHBOARD", "ACCOUNTING_HKD", "REPORT_BASIC"],
+        "hkd_pro": ["DASHBOARD", "ACCOUNTING_DN", "REPORT_ADVANCED", "INVENTORY", "PAYROLL"],
+    }
+
+    module_codes = PLAN_MODULE_MAP.get(plan, [])
+
+    if not module_codes:
+        return
+
+    # ❌ bỏ transaction ở đây
+
+    OrganizationModule.objects.filter(
+        organization=organization
+    ).update(is_enabled=False)
+
+    modules = Module.objects.filter(code__in=module_codes)
+
+    for module in modules:
+        org_module, created = OrganizationModule.objects.get_or_create(
+            organization=organization,
+            module=module,
+            defaults={
+                "is_enabled": True,
+                "activated_at": timezone.now(),
+            }
+        )
+
+        if not created:
+            org_module.is_enabled = True
+            org_module.activated_at = timezone.now()
+            org_module.save()
+
+"""
 def apply_plan_modules(organization, plan):
 
         PLAN_MODULE_MAP = {
@@ -197,3 +353,4 @@ def apply_plan_modules(organization, plan):
                     org_module.is_enabled = True
                     org_module.activated_at = timezone.now()
                     org_module.save()
+"""

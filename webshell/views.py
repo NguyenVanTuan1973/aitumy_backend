@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from knowledge_base.models import LegalDocument
@@ -10,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .forms import ConsultationRequestForm
-from .models import WebContent
+from .models import WebContent, ConsultationRequest
 from .serializers import WebContentSerializer
 
 from users.models import Module
@@ -206,5 +207,23 @@ def guest_slider(request):
         })
 
     return Response(data)
+
+def download_app(request):
+    token = request.GET.get("token")
+
+    if not token:
+        return HttpResponse("Thiếu token")
+
+    req = ConsultationRequest.objects.filter(
+        download_token=token,
+        status="approved"
+    ).first()
+
+    if not req:
+        return HttpResponse("Không có quyền truy cập")
+
+    return render(request, "webshell/download.html", {
+        "apk_url": "/media/apk/ttumy-v1.0.0.apk"
+    })
 
 

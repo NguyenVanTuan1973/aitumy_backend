@@ -13,7 +13,6 @@ class Regulation(models.Model):
     def __str__(self):
         return self.code
 
-
 class AccountType(models.TextChoices):
     ASSET = "asset", "Tài sản"
     LIABILITY = "liability", "Nợ phải trả"
@@ -23,7 +22,6 @@ class AccountType(models.TextChoices):
     INCOME_OTHER = "income_other", "Thu nhập khác"
     EXPENSE_OTHER = "expense_other", "Chi phí khác"
     RESULT = "result", "Xác định kết quả"
-
 
 class Account(models.Model):
 
