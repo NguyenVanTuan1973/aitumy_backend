@@ -9,8 +9,9 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG") == "True"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
+# Production
 ALLOWED_HOSTS = [
     'ttumy.vn',
     'www.ttumy.vn',
@@ -36,29 +37,14 @@ API_MEDIA_ROOT  = '/home/aitumyon6802/domains/api.ttumy.vn/public_html/media'
 APP_STATIC_ROOT = '/home/aitumyon6802/domains/app.ttumy.vn/public_html/static'
 APP_MEDIA_ROOT  = '/home/aitumyon6802/domains/app.ttumy.vn/public_html/media'
 
-# Dùng tĩnh cho subdomain hiện tại
-import socket
-current_host = socket.gethostname()  # tạm, bạn có thể set bằng ENV hoặc subdomain
 
-if 'api.ttumy.vn' in current_host:
-    STATIC_ROOT = API_STATIC_ROOT
-    MEDIA_ROOT = API_MEDIA_ROOT
-elif 'app.ttumy.vn' in current_host:
-    STATIC_ROOT = APP_STATIC_ROOT
-    MEDIA_ROOT = APP_MEDIA_ROOT
-else:
-    STATIC_ROOT = TTUMY_STATIC_ROOT
-    MEDIA_ROOT = TTUMY_MEDIA_ROOT
-
-# STATIC_URL = '/static/'
-# MEDIA_URL = '/media/'
-
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+# STATIC_URL = '/assets/' # production
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # =========================
@@ -260,7 +246,8 @@ scope = [
 # =========================
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-GOOGLE_OAUTH_REDIRECT_URI = "postmessage"
+# GOOGLE_OAUTH_REDIRECT_URI = "http://localhost:8000/api/drive/oauth/callback/"
+GOOGLE_OAUTH_REDIRECT_URI = os.getenv("GOOGLE_OAUTH_REDIRECT_URI")
 
 GOOGLE_OAUTH_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.email",

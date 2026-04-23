@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+
 # Hỗ trợ thay thế văn bản, Hỗ trợ hiệu lực theo thời gian
 class LegalDocument(models.Model):
     DOCUMENT_TYPE = [
@@ -37,8 +38,8 @@ class LegalClause(models.Model):
         LegalDocument, on_delete=models.CASCADE, related_name="clauses"
     )
 
-    chapter = models.CharField(max_length=50, blank=True)
-    article = models.CharField(max_length=50)  # Điều
+    chapter = models.CharField(max_length=50, blank=True) # Chương
+    article = models.CharField(max_length=50)           # Điều
     clause = models.CharField(max_length=50, blank=True)  # Khoản
     point = models.CharField(max_length=50, blank=True)  # Điểm
 
@@ -47,6 +48,7 @@ class LegalClause(models.Model):
 
     topic = models.CharField(max_length=200, blank=True, db_index=True)
 
+    slug = models.SlugField(unique=True)
     metadata = models.JSONField(default=dict, blank=True)
 
     is_active = models.BooleanField(default=True)
@@ -59,8 +61,26 @@ class LegalClause(models.Model):
             models.Index(fields=["article"]),
         ]
 
+        unique_together = [
+            ("document", "article", "clause", "point")
+        ]
+
+    # ======================
+    # HIỂN THỊ
+    # ======================
+    def display_ref(self):
+        parts = [f"Điều {self.article}"]
+
+        if self.clause:
+            parts.append(f"Khoản {self.clause}")
+
+        if self.point:
+            parts.append(f"Điểm {self.point}")
+
+        return " ".join(parts)
+
     def __str__(self):
-        return f"{self.document.code} - Điều {self.article}"
+        return f"{self.document.code} - {self.display_ref()}"
 
 class AccountingRegime(models.Model):
     code = models.CharField(max_length=50)  # 152/2025/TT-BTC, 99/2025/TT-BTC

@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.contrib.auth import authenticate, login
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -11,8 +12,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .forms import ConsultationRequestForm
-from .models import WebContent, ConsultationRequest
-from .serializers import WebContentSerializer
+from .models import WebContent, ConsultationRequest, GuideArticle, FAQCategory, FAQItem
+from .serializers import WebContentSerializer, FAQCategorySerializer
 
 from users.models import Module
 
@@ -105,15 +106,60 @@ def legal_detail_app(request, key):
     })
 
 def guide_center(request):
-    contents = WebContent.objects.filter(
-        content_key__in=["faq", "about", "landing"],
-        is_active=True
-    )
 
-    context = {item.content_key: item for item in contents}
+    # ======================
+    # VIDEO
+    # ======================
+    videos = GuideArticle.objects.filter(
+        guide_type="video",
+        is_active=True
+    ).order_by("order")
+
+    # ======================
+    # ABOUT (giữ WebContent nếu bạn đang dùng)
+    # ======================
+    about = WebContent.objects.filter(
+        content_key="about",
+        is_active=True
+    ).first()
+
+    # ======================
+    # FAQ (NEW SYSTEM)
+    # ======================
+    categories = FAQCategory.objects.prefetch_related(
+        Prefetch(
+            "faqs",
+            queryset=FAQItem.objects.filter(
+                is_active=True
+            ).prefetch_related("legal_clauses")
+        )
+    ).order_by("order")
+
+    context = {
+        "landing_videos": videos,
+        "about": about,
+        "categories": categories,
+    }
 
     return render(request, "webshell/guide_center.html", context)
 
+"""
+def guide_center(request):
+    videos = GuideArticle.objects.filter(is_active=True)
+
+    contents = WebContent.objects.filter(
+        content_key__in=["about", "faq"],
+        is_active=True
+    )
+
+    context = {
+        "landing_videos": videos,
+        "about": contents.filter(content_key="about").first(),
+        "faq": contents.filter(content_key="faq").first(),
+    }
+
+    return render(request, "webshell/guide_center.html", context)
+"""
 def policy(request):
     privacy = WebContent.objects.filter(
         content_key="privacy",
@@ -225,5 +271,27 @@ def download_app(request):
     return render(request, "webshell/download.html", {
         "apk_url": "/media/apk/ttumy-v1.0.0.apk"
     })
+
+def faq_page(request):
+    print("FAQ PAGE CALLED")  # <- QUAN TRỌNG
+
+    categories = FAQCategory.objects.prefetch_related(
+        "faqs__legal_clauses"
+    ).order_by("order")
+
+    print("categories:", categories.count())
+
+    return render(request, "faq.html", {
+        "categories": categories
+    })
+
+class FAQView(APIView):
+    def get(self, request):
+        categories = FAQCategory.objects.prefetch_related(
+            "faqs__legal_clauses"
+        ).filter(faqs__is_active=True).order_by("order")
+
+        serializer = FAQCategorySerializer(categories, many=True)
+        return Response(serializer.data)
 
 

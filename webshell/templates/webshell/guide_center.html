@@ -3,58 +3,163 @@
 
 {% block content %}
 <div class="container section">
-    <h2>Trung tâm hướng dẫn</h2>
+    <h2 class="mb-3">Trung tâm hướng dẫn</h2>
     <hr>
-    <h4>Giao diện thực tế trên thiết bị Mobile</h4>
 
-    <div class="demo-grid">
-      <img src="/media/guest_slider/tumy_demo_1.jpg">
-      <img src="/media/guest_slider/tumy_demo_2.jpg">
-      <img src="/media/guest_slider/tumy_demo_3.jpg">
-      <img src="/media/guest_slider/tumy_demo_4.jpg">
-      <img src="/media/guest_slider/tumy_demo_5.jpg">
-      <img src="/media/guest_slider/tumy_demo_6.jpg">
+    <h5 class="mb-3">Giao diện thực tế trên thiết bị Mobile</h5>
+
+    <div class="demo-grid mb-4">
+        <img src="/media/guest_slider/tumy_demo_1.jpg">
+        <img src="/media/guest_slider/tumy_demo_2.jpg">
+        <img src="/media/guest_slider/tumy_demo_3.jpg">
+        <img src="/media/guest_slider/tumy_demo_4.jpg">
+        <img src="/media/guest_slider/tumy_demo_5.jpg">
+        <img src="/media/guest_slider/tumy_demo_6.jpg">
     </div>
+
     <hr>
+
     <div class="row mt-4">
 
-        <!-- Clip hướng dẫn -->
-        <div class="col-md-4">
-            <h6>Clip hướng dẫn</h6>
-            {% if landing %}
-                <div>
-                    {{ landing.content|safe }}
-                </div>
+        <!-- ================= VIDEO ================= -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <h5 class="mb-3">🎬 Video hướng dẫn</h5>
+            {% if landing_videos %}
+                {% for video in landing_videos %}
+
+                    <div class="video-card mb-3">
+
+                        <a href="{{ video.video_url }}" target="_blank" rel="noopener noreferrer">
+                            <div class="video-thumb">
+                                <img src="{{ video.get_youtube_thumbnail }}">
+                                <div class="play-btn">▶</div>
+                            </div>
+                        </a>
+
+                        <div class="video-info mt-2">
+                            <h6>{{ video.title }}</h6>
+
+                            {% if video.content %}
+                                <div class="video-desc">
+                                    {{ video.content|safe }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                {% endfor %}
             {% else %}
-                <p>Đang cập nhật...</p>
+                <p>Không có video</p>
             {% endif %}
+
         </div>
 
-        <!-- Bài viết -->
-        <div class="col-md-4">
-            <h6>Bài viết</h6>
+        <!-- ================= ABOUT ================= -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <h5 class="mb-3">📘 Bài viết</h5>
+
             {% if about %}
-                <div>
+            <div class="about-card">
+
+                <h6 class="about-title">
+                    Giới thiệu
+                </h6>
+
+                <div class="about-content collapsed">
                     {{ about.content|safe }}
                 </div>
-            {% else %}
-                <p>Đang cập nhật...</p>
-            {% endif %}
-        </div>
 
-        <!-- FAQ -->
-        <div class="col-md-4">
-            <h6>FAQ</h6>
-            {% if faq %}
-                <div>
-                    {{ faq.content|safe }}
-                </div>
-            {% else %}
-                <p>Đang cập nhật...</p>
-            {% endif %}
+                <button class="about-toggle"
+                        onclick="toggleAbout(this)">
+                    Xem thêm
+                </button>
+
+            </div>
+        {% else %}
+            <p>Đang cập nhật...</p>
+        {% endif %}
         </div>
+<!--        <div class="col-lg-4 col-md-6 mb-4">-->
+<!--            <h5 class="mb-3">📘 Bài viết</h5>-->
+
+<!--            {% if about %}-->
+<!--                <div class="content-box">-->
+<!--                    {{ about.content|safe }}-->
+<!--                </div>-->
+<!--            {% else %}-->
+<!--                <p>Đang cập nhật...</p>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+
+
+        <!-- ================= FAQ ================= -->
+        <div class="col-lg-4 col-md-12 mb-4">
+    <h5 class="mb-3">❓ FAQ</h5>
+
+    <input type="text"
+           id="faqSearch"
+           class="form-control mb-3"
+           placeholder="Tìm kiếm câu hỏi...">
+
+    <div id="faqContainer">
+
+        {% for category in categories %}
+            <div class="faq-category">
+                <h6 class="text-primary mt-3 category-title">
+                    {{ category.name }}
+                </h6>
+
+                {% for faq in category.faqs.all %}
+                    <div class="faq-item" data-text="{{ faq.question|lower }}">
+
+                        <!-- QUESTION -->
+                        <div class="faq-question"
+                             onclick="toggleFaq(this)">
+                            {{ faq.question }}
+                            <span class="icon">+</span>
+                        </div>
+
+                        <!-- ANSWER -->
+                        <div class="faq-answer">
+
+                            <div class="faq-content">
+                                {{ faq.answer|safe }}
+                            </div>
+
+                            {% if faq.legal_clauses.all %}
+                                <div class="legal-box">
+                                    <strong>Căn cứ pháp lý:</strong>
+                                    <ul>
+                                        {% for clause in faq.legal_clauses.all %}
+                                            <li class="legal-item">
+                                                {{ clause.display_ref }} - {{ clause.document.code }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
 
     </div>
 
 </div>
+
+<!-- MODAL VIDEO -->
+<div id="videoModal" class="video-modal" onclick="closeVideo()">
+    <div class="video-container" onclick="event.stopPropagation();">
+        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+
 {% endblock %}

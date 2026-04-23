@@ -232,6 +232,7 @@ class DriveInitFolderView(APIView):
                     "code": server_auth_code,
                     "client_id": settings.GOOGLE_CLIENT_ID,
                     "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                    # "redirect_uri": "postmessage",
                     "redirect_uri": "http://localhost:8000/api/drive/oauth/callback/",
                     "grant_type": "authorization_code",
                 },
