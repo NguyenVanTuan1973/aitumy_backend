@@ -345,6 +345,16 @@ if (searchInput) {
     });
 }
 
+function toggleAbout(btn) {
+    const content = btn.previousElementSibling;
+
+    content.classList.toggle("collapsed");
+
+    btn.innerText = content.classList.contains("collapsed")
+        ? "Xem thêm"
+        : "Thu gọn";
+}
+
 function highlightText(element, keyword) {
     if (!keyword) return;
 

@@ -54,8 +54,8 @@ else:
     MEDIA_ROOT = TTUMY_MEDIA_ROOT
 
 
-STATIC_URL = '/static/'
-# STATIC_URL = '/assets/' # production
+# STATIC_URL = '/static/'
+STATIC_URL = '/assets/' # production
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
