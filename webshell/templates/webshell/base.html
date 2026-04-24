@@ -311,7 +311,7 @@
 <footer class="footer text-center">
     <div class="container">
         <p>© 2026 TTUMY - Ứng dụng hỗ trợ kế toán</p>
-        <p>Email: support@ttumy.vn | Hotline: 0909 331 388</p>
+        <p>Email: contact@ttumy.vn | Hotline: 0909 331 388</p>
     </div>
 </footer>
 
@@ -326,39 +326,29 @@ function toggleFaq(el) {
 }
 
 // SEARCH REALTIME
-document.getElementById("faqSearch").addEventListener("input", function() {
-    let value = this.value.toLowerCase();
-    let items = document.querySelectorAll(".faq-item");
+const searchInput = document.getElementById("faqSearch");
 
-    items.forEach(function(item) {
-        let text = item.getAttribute("data-text");
+if (searchInput) {
+    searchInput.addEventListener("input", function () {
+        let value = this.value.toLowerCase();
+        let items = document.querySelectorAll(".faq-item");
 
-        if (text.includes(value)) {
-            item.style.display = "block";
-        } else {
-            item.style.display = "none";
-        }
+        items.forEach(function(item) {
+            let text = item.getAttribute("data-text");
+
+            if (text && text.includes(value)) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
+        });
     });
-});
-</script>
+}
 
 function highlightText(element, keyword) {
     if (!keyword) return;
 
     let regex = new RegExp(`(${keyword})`, "gi");
     element.innerHTML = element.innerHTML.replace(regex, "<mark>$1</mark>");
-}
-
-<script id="9f4s2a">
-function toggleAbout(btn) {
-    const content = btn.previousElementSibling;
-
-    if (content.classList.contains("collapsed")) {
-        content.classList.remove("collapsed");
-        btn.innerText = "Thu gọn";
-    } else {
-        content.classList.add("collapsed");
-        btn.innerText = "Xem thêm";
-    }
 }
 </script>
