@@ -139,6 +139,8 @@ def guide_center(request):
         "landing_videos": videos,
         "about": about,
         "categories": categories,
+        "faq": None,
+        "landing": None,
     }
 
     return render(request, "webshell/guide_center.html", context)

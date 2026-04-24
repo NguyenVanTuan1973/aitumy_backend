@@ -9,17 +9,19 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+# DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
+DEBUG = True
 
 # Production
-ALLOWED_HOSTS = [
-    'ttumy.vn',
-    'www.ttumy.vn',
-    'api.ttumy.vn',
-    'app.ttumy.vn',
-]
+# ALLOWED_HOSTS = [
+#     'ttumy.vn',
+#     'www.ttumy.vn',
+#     'api.ttumy.vn',
+#     'app.ttumy.vn',
+# ]
 
-# ALLOWED_HOSTS = ['*']   # DEV
+ALLOWED_HOSTS = ['*']   # DEV
 
 
 # =========================
@@ -36,6 +38,20 @@ API_MEDIA_ROOT  = '/home/aitumyon6802/domains/api.ttumy.vn/public_html/media'
 # -------- app.ttumy.vn (SPA / file tĩnh) --------
 APP_STATIC_ROOT = '/home/aitumyon6802/domains/app.ttumy.vn/public_html/static'
 APP_MEDIA_ROOT  = '/home/aitumyon6802/domains/app.ttumy.vn/public_html/media'
+
+# Dùng tĩnh cho subdomain hiện tại
+import socket
+current_host = socket.gethostname() # tạm, bạn có thể set bằng ENV hoặc subdomain
+
+if 'api.ttumy.vn' in current_host:
+    STATIC_ROOT = API_STATIC_ROOT
+    MEDIA_ROOT = API_MEDIA_ROOT
+elif 'app.ttumy.vn' in current_host:
+    STATIC_ROOT = APP_STATIC_ROOT
+    MEDIA_ROOT = APP_MEDIA_ROOT
+else:
+    STATIC_ROOT = TTUMY_STATIC_ROOT
+    MEDIA_ROOT = TTUMY_MEDIA_ROOT
 
 
 STATIC_URL = '/static/'
