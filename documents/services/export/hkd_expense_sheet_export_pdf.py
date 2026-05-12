@@ -35,8 +35,6 @@ class HKDExpenseSheetExportPDF:
         quarter: int | None = None,
     ) -> str:
 
-        print("Chạy qua def export")
-
         # =========================
         # 1. RESOLVE PERIOD
         # =========================
@@ -55,7 +53,6 @@ class HKDExpenseSheetExportPDF:
         # =========================
         renderer = BasePDFRenderer(self.file_path)
 
-        print("renderer :", renderer)
 
         # ----- HEADER PHÁP LÝ -----
         renderer.build_header(
@@ -100,45 +97,6 @@ class HKDExpenseSheetExportPDF:
     # INTERNAL
     # =====================================================
 
-    def _debug_resolve_period(self, period_type, year, month, quarter):
-        print("===== DEBUG _resolve_period =====")
-        print("period_type =", period_type, type(period_type))
-        print("year        =", year, type(year))
-        print("month       =", month, type(month))
-        print("quarter     =", quarter, type(quarter))
-
-        try:
-            result = self._resolve_period(period_type, year, month, quarter)
-            print("RETURN VALUE =", result)
-            print("label       =", result[0], type(result[0]))
-            print("start_date  =", result[1], type(result[1]))
-            print("end_date    =", result[2], type(result[2]))
-            print("===== DEBUG OK =====")
-            return result
-
-        except Exception as e:
-            print("❌ DEBUG ERROR in _resolve_period:", repr(e))
-            raise
-
-    def _debug_load_expense_from_sheet(self, start_date, end_date):
-        print("===== DEBUG _load_expense_from_sheet =====")
-        print("start_date =", start_date, type(start_date))
-        print("end_date   =", end_date, type(end_date))
-        print("user       =", self.user)
-
-        try:
-            result = self._load_expense_from_sheet(start_date, end_date)
-            print("RETURN TYPE =", type(result))
-            print("TOTAL ITEMS =", len(result[0]))
-            print("TOTAL AMOUNT =", result[1])
-            print("===== LOAD SHEET OK =====")
-            return result
-
-        except Exception as e:
-            print("❌ DEBUG ERROR in _load_expense_from_sheet")
-            print("EXCEPTION =", repr(e))
-            raise
-
     def _resolve_period(self, period_type, year, month, quarter):
         if period_type == "month":
             anchor_date = datetime.date(year, int(month), 1)
@@ -167,7 +125,6 @@ class HKDExpenseSheetExportPDF:
         user_drive = UserDrive.objects.filter(user=self.user).first()
 
         if not user_drive:
-            print("⚠️ fallback UserDrive trong export PDF")
             user_drive = UserDrive.objects.first()
 
         if not user_drive or not user_drive.access_token:

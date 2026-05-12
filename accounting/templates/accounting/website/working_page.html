@@ -1,0 +1,171 @@
+{% extends "accounting/website/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-calculator me-2"></i>Thiết lập Số dư đầu kỳ</h5>
+                    <span class="badge bg-light text-dark">Năm tài chính: 2026</span>
+                </div>
+                
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4" id="openingBalanceTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="accounts-tab" data-bs-toggle="tab" data-bs-target="#accounts" type="button">1. Số dư Tài khoản</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="customers-tab" data-bs-toggle="tab" data-bs-target="#customers" type="button">2. Khách hàng/NCC</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button">3. Hàng hóa/Vật tư</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="assets-tab" data-bs-toggle="tab" data-bs-target="#assets" type="button">4. Tài sản/Công cụ</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="openingBalanceTabsContent">
+                        
+                        <div class="tab-pane fade show active" id="accounts" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle border">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Số hiệu TK</th>
+                                            <th>Tên tài khoản</th>
+                                            <th class="text-end">Dư Nợ đầu kỳ</th>
+                                            <th class="text-end">Dư Có đầu kỳ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="text" class="form-control form-control-sm" value="1111" readonly></td>
+                                            <td>Tiền mặt (VNĐ)</td>
+                                            <td><input type="number" class="form-control form-control-sm text-end" placeholder="0"></td>
+                                            <td><input type="number" class="form-control form-control-sm text-end" placeholder="0" disabled></td>
+                                        </tr>
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="customers" role="tabpanel">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>Chi tiết công nợ phải thu/phải trả</h6>
+                                <button class="btn btn-sm btn-outline-success"><i class="bi bi-plus-circle"></i> Thêm đối tượng</button>
+                            </div>
+                            <table class="table table-sm border">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>Mã đối tượng</th>
+                                        <th>Tên đối tượng</th>
+                                        <th>Loại (KH/NCC)</th>
+                                        <th>Dư Nợ</th>
+                                        <th>Dư Có</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control form-control-sm" placeholder="KH001"></td>
+                                        <td><input type="text" class="form-control form-control-sm" placeholder="Công ty A"></td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>Khách hàng</option>
+                                                <option>Nhà cung cấp</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="number" class="form-control form-control-sm text-end"></td>
+                                        <td><input type="number" class="form-control form-control-sm text-end"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade" id="inventory" role="tabpanel">
+                            <table class="table table-sm border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Mã hàng</th>
+                                        <th>Tên hàng hóa/vật tư</th>
+                                        <th>Kho</th>
+                                        <th class="text-center">ĐVT</th>
+                                        <th class="text-end">Số lượng</th>
+                                        <th class="text-end">Giá trị (Thành tiền)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control form-control-sm"></td>
+                                        <td><input type="text" class="form-control form-control-sm"></td>
+                                        <td><input type="text" class="form-control form-control-sm" value="Kho chính"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-center"></td>
+                                        <td><input type="number" class="form-control form-control-sm text-end"></td>
+                                        <td><input type="number" class="form-control form-control-sm text-end"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade" id="assets" role="tabpanel">
+                            <table class="table table-sm border text-nowrap">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>Mã TS/CC</th>
+                                        <th>Tên tài sản</th>
+                                        <th>Ngày bắt đầu SD</th>
+                                        <th>Nguyên giá</th>
+                                        <th>Giá trị đã khấu hao</th>
+                                        <th>Giá trị còn lại</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control form-control-sm"></td>
+                                        <td><input type="text" class="form-control form-control-sm"></td>
+                                        <td><input type="date" class="form-control form-control-sm"></td>
+                                        <td><input type="number" class="form-control form-control-sm text-end"></td>
+                                        <td><input type="number" class="form-control form-control-sm text-end"></td>
+                                        <td><input type="number" class="form-control form-control-sm text-end" readonly placeholder="Tự động"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i> Lưu toàn bộ số dư</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Tinh chỉnh giao diện để giống phần mềm chuyên nghiệp */
+    .nav-tabs .nav-link {
+        color: #495057;
+        font-weight: 500;
+    }
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 3px solid #0d6efd;
+    }
+    .table input.form-control-sm {
+        border: 1px solid transparent;
+        background-color: transparent;
+    }
+    .table input.form-control-sm:focus {
+        border-color: #86b7fe;
+        background-color: #fff;
+        box-shadow: none;
+    }
+    .table tr:hover input.form-control-sm {
+        border-color: #dee2e6;
+        background-color: #fff;
+    }
+</style>
+{% endblock %}

@@ -13,7 +13,6 @@ def regulation_list(request):
         "regulations": regulations
     })
 
-
 def regulation_create(request):
     form = RegulationForm(request.POST or None)
     if form.is_valid():
@@ -23,7 +22,6 @@ def regulation_create(request):
     return render(request, "accounting/regulation_form.html", {
         "form": form
     })
-
 
 # ======================
 # ACCOUNT
@@ -35,7 +33,6 @@ def account_list(request):
         "accounts": accounts
     })
 
-
 def account_create(request):
     form = AccountForm(request.POST or None)
     if form.is_valid():
@@ -45,7 +42,6 @@ def account_create(request):
     return render(request, "accounting/account_form.html", {
         "form": form
     })
-
 
 def account_edit(request, pk):
     account = get_object_or_404(Account, pk=pk)

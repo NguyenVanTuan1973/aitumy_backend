@@ -1,0 +1,52 @@
+{% extends "accounting/website/base.html" %}
+
+{% block content %}
+
+<h4>Chi tiết nghiệp vụ</h4>
+
+<div class="row mt-3">
+
+    <!-- LEFT -->
+    <div class="col-6">
+        <div class="card p-3">
+            <h5>Thông tin</h5>
+
+            <p><b>Ngày:</b> {{ t.date }}</p>
+            <p><b>Số CT:</b> {{ t.voucher }}</p>
+            <p><b>Nội dung:</b> {{ t.description }}</p>
+            <p><b>Số tiền:</b> {{ t.amount }}</p>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-6">
+        <div class="card p-3">
+
+            <h5>Định khoản</h5>
+
+            <form method="post">
+
+                <div class="mb-3">
+                    <label>Nợ</label>
+                    <input class="form-control" name="debit">
+                </div>
+
+                <div class="mb-3">
+                    <label>Có</label>
+                    <input class="form-control" name="credit">
+                </div>
+
+                <button class="btn btn-success">Lưu</button>
+
+            </form>
+
+            <div class="mt-3 alert alert-info">
+                💡 Gợi ý: Nợ 156 / Có 331
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

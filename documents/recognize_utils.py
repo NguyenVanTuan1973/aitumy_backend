@@ -17,7 +17,7 @@ from .extract_utils import generate_pdf_thumbnail, generate_image_thumbnail
 try:
     from unidecode import unidecode
 except Exception:
-    # nếu chưa cài package, thông báo hướng dẫn (pip install Unidecode)
+
     def unidecode(s: str) -> str:
         return s  # fallback: trả về nguyên gốc nếu chưa cài
 
@@ -130,14 +130,14 @@ def detect_form_template(ocr_text: str):
     for temp in FormTemplate.objects.filter(is_active=True):
         score = 0
 
-        # Lấy title từ model nếu có, fallback dùng name hoặc example_text
+
         title_source = None
         if hasattr(temp, "title") and temp.title:
             title_source = temp.title
         elif hasattr(temp, "name") and temp.name:
             title_source = temp.name
         elif hasattr(temp, "example_text") and temp.example_text:
-            # dùng một đoạn ngắn làm title fallback
+
             title_source = (temp.example_text[:120] or "").splitlines()[0]
         else:
             title_source = None

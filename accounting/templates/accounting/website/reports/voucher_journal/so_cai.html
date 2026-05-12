@@ -1,0 +1,145 @@
+{% load humanize %}
+<style>
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; table-layout: fixed; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: right; overflow: hidden; }
+    th { background: #f2f2f2; text-align: center; vertical-align: middle; }
+    .left { text-align: left; }
+    .center { text-align: center; }
+    .account-block { margin-bottom: 50px; }
+    .account-header { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #0056b3; }
+    .summary { background: #f9f9f9; font-weight: bold; }
+    .debit { color: #28a745; }
+    .credit { color: #dc3545; }
+    /* Định độ rộng cố định cho các cột số tiền để bảng không bị nhảy */
+    .col-money { width: 100px; }
+    .col-month { width: 80px; }
+</style>
+
+<div class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+
+        <div class="card-header bg-primary text-white text-center">
+            <strong>📊 {{ report_name }}</strong>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-success ms-2" onclick="exportExcel()">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    {% for acc in accounts %}
+    <div class="account-block">
+        <div class="account-header">
+            Tài khoản: {{ acc.code }} - {{ acc.account_name|default:"Tên tài khoản" }}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" class="col-month">Tháng</th>
+                    <th colspan="2">Số dư đầu kỳ</th>
+                    <th colspan="3">Phát sinh trong kỳ</th>
+                    <th colspan="2">Cộng phát sinh</th>
+                    <th colspan="2">Số dư cuối kỳ</th>
+                </tr>
+                <tr>
+                    <th class="col-money">Nợ</th>
+                    <th class="col-money">Có</th>
+                    <th class="left">TK Đối ứng</th>
+                    <th class="col-money">Ghi Nợ</th>
+                    <th class="col-money">Ghi Có</th>
+                    <th class="col-money">Nợ</th>
+                    <th class="col-money">Có</th>
+                    <th class="col-money">Nợ</th>
+                    <th class="col-money">Có</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for m in acc.months %}
+                {% if m.debit != 0 or m.credit != 0 or m.opening_debit != 0 or m.opening_credit != 0 %}
+                <tr>
+                    <td class="center">Tháng {{ m.month|stringformat:"02d" }}</td>
+
+                    <!-- Số dư đầu kỳ -->
+                    <td class="debit">
+                        {% if m.opening_debit != 0 %}{{ m.opening_debit|intcomma }}{% endif %}
+                    </td>
+                    <td class="credit">
+                        {% if m.opening_credit != 0 %}{{ m.opening_credit|intcomma }}{% endif %}
+                    </td>
+
+                    <!-- Phát sinh -->
+                    <td class="left" style="font-size: 11px;">
+                        {{ m.corresponding_accounts }}
+                    </td>
+                    <td class="debit">
+                        {% if m.debit != 0 %}{{ m.debit|intcomma }}{% endif %}
+                    </td>
+                    <td class="credit">
+                        {% if m.credit != 0 %}{{ m.credit|intcomma }}{% endif %}
+                    </td>
+
+                    <!-- Cộng phát sinh -->
+                    <td class="debit">
+                        {% if m.debit != 0 %}{{ m.debit|intcomma }}{% endif %}
+                    </td>
+                    <td class="credit">
+                        {% if m.credit != 0 %}{{ m.credit|intcomma }}{% endif %}
+                    </td>
+
+                    <!-- Số dư cuối kỳ -->
+                    <td class="debit">
+                        {% if m.closing_debit != 0 %}{{ m.closing_debit|intcomma }}{% endif %}
+                    </td>
+                    <td class="credit">
+                        {% if m.closing_credit != 0 %}{{ m.closing_credit|intcomma }}{% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+
+            <!-- TỔNG CỘNG -->
+            <tr class="summary">
+                <td colspan="3" class="center">TỔNG CỘNG PHÁT SINH</td>
+                <td></td>
+                <td class="debit">
+                    {% if acc.sum_debit != 0 %}{{ acc.sum_debit|intcomma }}{% endif %}
+                </td>
+                <td class="credit">
+                    {% if acc.sum_credit != 0 %}{{ acc.sum_credit|intcomma }}{% endif %}
+                </td>
+                <td class="debit">
+                    {% if acc.sum_debit != 0 %}{{ acc.sum_debit|intcomma }}{% endif %}
+                </td>
+                <td class="credit">
+                    {% if acc.sum_credit != 0 %}{{ acc.sum_credit|intcomma }}{% endif %}
+                </td>
+                <td colspan="2"></td>
+            </tr>
+
+            <!-- SỐ DƯ CUỐI KỲ -->
+            <tr class="summary" style="background: #eee;">
+                <td colspan="8" class="center">SỐ DƯ CUỐI KỲ</td>
+                {% with last_m=acc.months|last %}
+                <td class="debit">
+                    {% if last_m.closing_debit != 0 %}{{ last_m.closing_debit|intcomma }}{% endif %}
+                </td>
+                <td class="credit">
+                    {% if last_m.closing_credit != 0 %}{{ last_m.closing_credit|intcomma }}{% endif %}
+                </td>
+                {% endwith %}
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% empty %}
+    <p>Không có dữ liệu hiển thị.</p>
+{% endfor %}

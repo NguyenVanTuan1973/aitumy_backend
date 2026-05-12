@@ -1,0 +1,36 @@
+{% extends "accounting/website/base.html" %}
+
+{% block content %}
+
+<h4>Nhật ký chung</h4>
+
+<div class="card p-3 mt-3">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>Nội dung</th>
+                <th>Nợ</th>
+                <th>Có</th>
+                <th>Số tiền</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for j in journals %}
+            <tr>
+                <td>{{ j.date }}</td>
+                <td>{{ j.description }}</td>
+                <td>{{ j.debit }}</td>
+                <td>{{ j.credit }}</td>
+                <td>{{ j.amount }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

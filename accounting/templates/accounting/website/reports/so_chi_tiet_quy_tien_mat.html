@@ -1,0 +1,100 @@
+{% load humanize %}
+
+<style>
+    .money {
+        text-align: right;
+        font-family: monospace;
+        font-weight: 600;
+    }
+
+    .row-total {
+        background: #ffe8a1;
+        font-weight: bold;
+    }
+</style>
+
+<div class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <strong>📊 {{ journal_entries.report_name }}</strong>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-bordered table-hover mb-0">
+
+            <thead class="table-light text-center">
+                <tr>
+                    <th rowspan="2">Ngày ghi</th>
+                    <th rowspan="2">Ngày CT</th>
+                    <th rowspan="2">Số CT</th>
+                    <th rowspan="2">Diễn giải</th>
+                    <th rowspan="2">TK ĐƯ</th>
+                    <th colspan="2">Phát sinh</th>
+                    <th rowspan="2">Số tồn</th>
+                    <th rowspan="2">Ghi chú</th>
+                </tr>
+                <tr>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in journal_entries.rows %}
+
+                {% if row.type == "opening" %}
+                <tr class="row-total">
+                    <td colspan="7">{{ row.dien_giai }}</td>
+                    <td class="money">{{ row.ton|intcomma }}</td>
+                    <td></td>
+                </tr>
+
+                {% elif row.type == "data" %}
+                <tr>
+                    <td class="text-center">{{ row.ngay_ghi }}</td>
+                    <td class="text-center">{{ row.ngay_ct }}</td>
+                    <td class="text-center">{{ row.so_ct }}</td>
+                    <td>{{ row.dien_giai }}</td>
+                    <td class="text-center">{{ row.tk_doi_ung }}</td>
+                    <td class="money">{% if row.no %}{{ row.no|intcomma }}{% endif %}</td>
+                    <td class="money">{% if row.co %}{{ row.co|intcomma }}{% endif %}</td>
+                    <td class="money">{{ row.ton|intcomma }}</td>
+                    <td></td>
+                </tr>
+
+                {% elif row.type == "total_ps" %}
+                <tr class="row-total">
+                    <td colspan="5">{{ row.dien_giai }}</td>
+                    <td class="money">{{ row.no|intcomma }}</td>
+                    <td class="money">{{ row.co|intcomma }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                {% elif row.type == "closing" %}
+                <tr class="row-total">
+                    <td colspan="7">{{ row.dien_giai }}</td>
+                    <td class="money">{{ row.ton|intcomma }}</td>
+                    <td></td>
+                </tr>
+
+                {% endif %}
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    <div class="card-footer text-end">
+        Ngày tạo: {{ journal_entries.generated_at|date:"d/m/Y H:i" }}
+    </div>
+
+</div>

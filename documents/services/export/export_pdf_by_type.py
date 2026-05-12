@@ -24,7 +24,6 @@ def export_pdf_by_type(*, report_type, user, organization, params: dict) -> str:
     """
     Điều phối export PDF theo ReportType
     """
-    print("\n===== RUN: export_pdf_by_type =====")
 
     period_type = params.get("period_type")
     year = params.get("year")
@@ -46,13 +45,10 @@ def export_pdf_by_type(*, report_type, user, organization, params: dict) -> str:
     export_dir = os.path.join(settings.MEDIA_ROOT, "exports")
     os.makedirs(export_dir, exist_ok=True)
 
-    # filename = f"{report_type.value}_{year}.pdf"
     timestamp = int(time.time())
     filename = f"{report_type}_{year}_{timestamp}.pdf"
 
     file_path = os.path.join(export_dir, filename)
-
-    print("Export file_path:", file_path)
 
     # ==========================================================
     # FREE USER (organization = None)
@@ -109,7 +105,6 @@ def export_pdf_by_type(*, report_type, user, organization, params: dict) -> str:
     # HKD
     # ==========================================================
     if report_type == ReportType.HKD_INCOME:
-        print("➡ HKD_INCOME EXPORT")
 
         exporter = HKDIncomeSheetExportPDF(
             file_path=file_path,
@@ -141,7 +136,7 @@ def export_pdf_by_type(*, report_type, user, organization, params: dict) -> str:
     # ENTERPRISE
     # ==========================================================
     if report_type == ReportType.ENTERPRISE_BALANCE:
-        print("➡ ENTERPRISE_BALANCE (NOT IMPLEMENTED)")
+
         raise ValueError("Chưa triển khai ENTERPRISE_BALANCE")
 
     # ==========================================================

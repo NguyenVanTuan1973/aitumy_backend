@@ -14,5 +14,4 @@ class SidebarMenuListAPIView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        # ví dụ: lọc theo module user có quyền
         return SidebarMenu.objects.filter(is_active=True).order_by("sort_order")

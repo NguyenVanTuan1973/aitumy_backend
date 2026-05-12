@@ -26,7 +26,7 @@ class UserFreeSheetExportPDF:
     }
 
     def __init__(self, file_path: str, user, sheet_type: str):
-        print(">>> RUN __init__ UserFreeSheetExportPDF")
+
         if sheet_type not in self.SHEET_CONFIG:
             raise ValueError(f"Invalid sheet_type: {sheet_type}")
 
@@ -47,8 +47,6 @@ class UserFreeSheetExportPDF:
         month: int | None = None,
         quarter: int | None = None,
     ) -> str:
-
-        print(">>> RUN export()")
 
         period_label, start_date, end_date = self._resolve_period(
             period_type, year, month, quarter
@@ -94,7 +92,7 @@ class UserFreeSheetExportPDF:
         return renderer.render()
 
     def _resolve_period(self, period_type, year, month, quarter):
-        print("ĐÃ CHẠY _resolve_period")
+
         if period_type == "month":
             if not month:
                 raise ValueError("month is required for period_type=month")
@@ -117,34 +115,26 @@ class UserFreeSheetExportPDF:
         else:
             raise ValueError("Invalid period_type")
 
-        print("ANCHOR DATE:", anchor_date)
         start_date, end_date = get_period_range(period_type, anchor_date)
-        print("START:", start_date)
-        print("END:", end_date)
 
         return label, start_date, end_date
 
     def _load_from_sheet(self, start_date, end_date):
-        print("ĐÃ CHẠY _load_from_sheet")
 
         user_drive = UserDrive.objects.filter(user=self.user).first()
 
         if not user_drive:
             if settings.DEBUG:
-                print("⚠️ DEV MODE: fallback UserDrive")
+
                 user_drive = UserDrive.objects.first()
 
         if not user_drive or not user_drive.access_token:
             raise Exception("NO_GOOGLE_DRIVE_CONNECTED")
 
-        print("UER_DRIVE:", user_drive)
-
         if not user_drive or not user_drive.access_token:
             raise Exception("NO_GOOGLE_DRIVE_CONNECTED")
 
         sheet_folder_name = f"so_thu_chi_hkd_{start_date.year}"
-
-        print("Tìm Google Sheet name:", sheet_folder_name)
 
         try:
             drive_sheet = DriveFolder.objects.get(
@@ -155,9 +145,6 @@ class UserFreeSheetExportPDF:
         except DriveFolder.DoesNotExist:
             raise Exception(f"Không tìm thấy Google Sheet {sheet_folder_name}")
 
-        print("NODE TYPE:", drive_sheet.node_type)
-        print("SPREADSHEET ID:", drive_sheet.folder_id)
-
         creds = Credentials(
             token=user_drive.access_token,
             scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"],
@@ -167,22 +154,14 @@ class UserFreeSheetExportPDF:
 
         sheet_name = self.config["sheet_name"]
 
-        print("sheet_name:", sheet_name)
-
         result = service.spreadsheets().values().get(
             spreadsheetId=drive_sheet.folder_id,
             range=f"{sheet_name}!A:E"
         ).execute()
 
-        print("=== TẤT CẢ DriveFolder của user ===")
         all_nodes = DriveFolder.objects.filter(drive=user_drive)
 
-        for n in all_nodes:
-            print("NAME:", n.name, "| TYPE:", n.node_type)
-
         rows = result.get("values", [])
-        # if rows:
-        #     rows = rows[1:]  # bỏ header
 
         items = []
         total_amount = 0
@@ -195,13 +174,11 @@ class UserFreeSheetExportPDF:
             if not row_date or not (start_date <= row_date <= end_date):
                 continue
 
-            print("RAW ROW:", row)
-
             try:
                 raw_amount = row[2].replace(".", "").replace(",", "")
                 amount = float(raw_amount)
             except Exception as e:
-                print("AMOUNT PARSE ERROR:", row[2], e)
+
                 continue
 
             total_amount += amount

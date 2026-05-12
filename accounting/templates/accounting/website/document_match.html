@@ -1,0 +1,33 @@
+{% extends "accounting/website/base.html" %}
+
+{% block content %}
+
+<h4>Gắn chứng từ</h4>
+
+<div class="row mt-3">
+
+    <div class="col-6">
+        <div class="card p-3">
+            <h5>Nghiệp vụ</h5>
+            <p>{{ t.description }}</p>
+            <p>{{ t.amount }}</p>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="card p-3">
+            <h5>PDF</h5>
+
+            {% for doc in documents %}
+            <div class="d-flex justify-content-between mb-2">
+                <span>{{ doc.name }}</span>
+                <button class="btn btn-sm btn-primary">Gắn</button>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

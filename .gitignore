@@ -1,18 +1,21 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Virtual env
+# Virtual Environment
 venv/
 env/
+.venv/
 
 # Django
 db.sqlite3
 media/
 staticfiles/
 
-# Env
+# Environment
 .env
+.env.local
 
 # Logs
 *.log
@@ -25,5 +28,14 @@ staticfiles/
 .DS_Store
 Thumbs.db
 
+# Python cache
+.pytest_cache/
+.mypy_cache/
+
+# Build
+dist/
+build/
+
 # Secrets
-*.json
+*.pem
+*.key

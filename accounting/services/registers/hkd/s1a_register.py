@@ -243,12 +243,6 @@ class S1aRegister(BaseRegister):
                 styles["PDFCenter"]
             ),
 
-            # Spacer(1, 50),
-            #
-            # Paragraph(
-            #     f"<b>{organization.owner}</b>",
-            #     styles["PDFCenter"]
-            # ),
         ]
 
         signature_table = Table(

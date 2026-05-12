@@ -1,0 +1,44 @@
+{% extends "accounting/website/base.html" %}
+
+{% block content %}
+
+<h4>Danh sách nghiệp vụ</h4>
+
+<div class="card p-3 mt-3">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>Nội dung</th>
+                <th>Số tiền</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for t in transactions %}
+            <tr>
+                <td>{{ t.date }}</td>
+                <td>
+                    <a href="/accounting/web/transactions/{{ t.id }}/">
+                        {{ t.description }}
+                    </a>
+                </td>
+                <td>{{ t.amount }}</td>
+                <td>
+                    {% if t.status == "NEW" %}
+                        <span class="badge bg-danger">Chưa định khoản</span>
+                    {% else %}
+                        <span class="badge bg-success">OK</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

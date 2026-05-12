@@ -174,13 +174,6 @@ class S2cRegister(BaseRegister):
                 "(Ký, ghi rõ họ tên, đóng dấu nếu có)",
                 styles["PDFCenter"]
             ),
-
-            # Spacer(1, 50),
-            #
-            # Paragraph(
-            #     f"<b>{organization.owner}</b>",
-            #     styles["PDFCenter"]
-            # ),
         ]
 
         signature_table = Table(

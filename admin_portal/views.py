@@ -56,10 +56,6 @@ def dashboard(request):
         legal_form=Organization.LegalForm.ENTERPRISE
     ).count()
 
-    # individual_count = Organization.objects.filter(
-    #     legal_form=Organization.LegalForm.INDIVIDUAL
-    # ).count()
-
     total_modules = Module.objects.count()
     active_modules = Module.objects.filter(is_active=True).count()
 

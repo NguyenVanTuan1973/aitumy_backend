@@ -1,0 +1,87 @@
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr class="text-center align-middle">
+            <th rowspan="2">Ngày ghi sổ</th>
+            <th colspan="2">Chứng từ</th>
+            <th rowspan="2">Diễn giải</th>
+            <th colspan="2">Số phát sinh</th>
+            <th colspan="2">Tài khoản đối ứng</th>
+        </tr>
+        <tr class="text-center">
+            <th>Số hiệu</th>
+            <th>Ngày</th>
+            <th>Nợ</th>
+            <th>Có</th>
+            <th>Nợ</th>
+            <th>Có</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <!-- Ngày ghi sổ -->
+            <td class="text-center">
+                {{ row.date }}
+            </td>
+
+            <!-- Số chứng từ -->
+            <td class="text-center">
+                {{ row.voucher_no }}
+            </td>
+
+            <!-- Ngày chứng từ -->
+            <td class="text-center">
+                {{ row.voucher_date }}
+            </td>
+
+            <!-- Diễn giải -->
+            <td>
+                {{ row.description }}
+            </td>
+
+            <!-- Số tiền Nợ -->
+            <td class="text-end">
+                {% if row.debit_amount %}
+                    {{ row.debit_amount|floatformat:0 }}
+                {% endif %}
+            </td>
+
+            <!-- Số tiền Có -->
+            <td class="text-end">
+                {% if row.credit_amount %}
+                    {{ row.credit_amount|floatformat:0 }}
+                {% endif %}
+            </td>
+
+            <!-- TK Nợ -->
+            <td class="text-center">
+                {{ row.debit_account }}
+            </td>
+
+            <!-- TK Có -->
+            <td class="text-center">
+                {{ row.credit_account }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+    <tfoot>
+        <tr class="fw-bold">
+            <td colspan="4" class="text-center">
+                Tổng cộng
+            </td>
+
+            <td class="text-end">
+                {{ total_debit|floatformat:0 }}
+            </td>
+
+            <td class="text-end">
+                {{ total_credit|floatformat:0 }}
+            </td>
+
+            <td colspan="2"></td>
+        </tr>
+    </tfoot>
+</table>

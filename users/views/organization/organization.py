@@ -87,13 +87,6 @@ class CreateOrganizationAPIView(APIView):
             is_enabled=True
         )
 
-        # UserModule.objects.create(
-        #     user=user,
-        #     organization=org,
-        #     module=module,
-        #     is_enabled=True
-        # )
-
         AccountingProfile.objects.create(
             organization=org,
             name=name,

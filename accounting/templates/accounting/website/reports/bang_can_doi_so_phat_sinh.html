@@ -1,0 +1,71 @@
+{% load humanize %}
+
+<style>
+    .money {
+       text-align: right;
+       padding-right: 5px;
+       font-variant-numeric: tabular-nums; /* Giúp các chữ số có độ rộng bằng nhau */
+    }
+</style>
+<div class="card mt-4 shadow-lg border-primary">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+
+        <div class="card-header bg-primary text-white text-center">
+            <strong>📊{{ journal_entries.report_name }}</strong>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-bordered table-hover mb-0">
+
+            <thead class="table-light text-center">
+                <tr>
+                    <th rowspan="2">Số TK</th>
+                    <th rowspan="2">Tên tài khoản</th>
+                    <th colspan="2">Số dư đầu</th>
+                    <th colspan="2">Phát sinh</th>
+                    <th colspan="2">Số dư cuối</th>
+                </tr>
+                <tr>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in journal_entries.rows %}
+                <tr class="{% if row.name == 'Tổng cộng' %}table-warning fw-bold{% endif %}">
+                    <td class="text-center">{{ row.account }}</td>
+                    <td>{{ row.name }}</td>
+
+                    <td class="money">{% if row.open_no %}{{ row.open_no|intcomma }}{% endif %}</td>
+                    <td class="money">{% if row.open_co %}{{ row.open_co|intcomma }}{% endif %}</td>
+
+                    <td class="money">{{ row.ps_no|intcomma }}</td>
+                    <td class="money">{{ row.ps_co|intcomma }}</td>
+
+                    <td class="money">{{ row.end_no|intcomma }}</td>
+                    <td class="money">{{ row.end_co|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    <div class="card-footer text-end">
+        Ngày tạo: {{ journal_entries.generated_at|date:"d/m/Y H:i" }}
+    </div>
+
+</div>

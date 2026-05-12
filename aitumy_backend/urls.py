@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/drive/', include('drive_integration.urls')),
     path('api/support/', include('support.urls')),
     path("api/accounting/", include("accounting.urls")),
+    # path("accounting/", include("accounting.urls_web")),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

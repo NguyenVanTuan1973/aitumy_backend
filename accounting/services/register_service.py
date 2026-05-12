@@ -10,13 +10,10 @@ def generate_register_pdf(
     file_path
 ):
 
-    # lấy register tương ứng
     register = RegisterEngine.get_register(form_code)
 
-    # khởi tạo renderer
     renderer = BasePDFRenderer(file_path)
 
-    # register build layout
     elements = register.build_pdf(
         renderer=renderer,
         organization=organization,
@@ -24,7 +21,6 @@ def generate_register_pdf(
         year=year
     )
 
-    # render PDF
     pdf_path = renderer.build(elements)
 
     return pdf_path

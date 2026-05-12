@@ -1,0 +1,95 @@
+{% load humanize %}
+
+<style>
+    .money {
+        text-align: right;
+        font-family: monospace;
+        font-weight: 600;
+    }
+
+    .row-total {
+        background: #ffe8a1;
+        font-weight: bold;
+    }
+</style>
+
+<div class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <strong>📊 {{ data.report_name }}</strong>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="report-container">
+
+        <!-- META -->
+        <div class="report-header mb-3">
+            <div><b>Kỳ:</b> {{ data.period }}</div>
+            <div><b>Sản phẩm, dịch vụ:</b> {{ data.product_name }}</div>
+        </div>
+
+        <!-- TABLE -->
+        <table class="table table-bordered report-table">
+            <thead>
+                <tr>
+                    <th rowspan="3">Chỉ tiêu</th>
+                    <th rowspan="3">Tổng số tiền</th>
+                    <th colspan="6">Chia ra theo khoản mục</th>
+                </tr>
+                <tr>
+                    <th>NVL</th>
+                    <th>Nhân công</th>
+                    <th>Máy TC</th>
+                    <th>SXC</th>
+                    <th>Bán hàng</th>
+                    <th>QLDN</th>
+                </tr>
+                <tr>
+                    <th>621</th>
+                    <th>622</th>
+                    <th>623</th>
+                    <th>627</th>
+                    <th>641</th>
+                    <th>642</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in data.rows %}
+                <tr class="{% if row.account == 'CỘNG' %}row-total{% endif %}">
+                    <td>{{ row.desc }}</td>
+
+                    <td class="money">
+                        {% if row.total != "" %}
+                            {{ row.total|intcomma }}
+                        {% endif %}
+                    </td>
+
+                    <td class="money">{{ row.c1|intcomma }}</td>
+                    <td class="money">{{ row.c2|intcomma }}</td>
+                    <td class="money">{{ row.c3|intcomma }}</td>
+                    <td class="money">{{ row.c4|intcomma }}</td>
+                    <td class="money">{{ row.c5|intcomma }}</td>
+                    <td class="money">{{ row.c6|intcomma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">Không có dữ liệu</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="card-footer text-end">
+        Ngày tạo: {{ data.generated_at|date:"d/m/Y H:i" }}
+    </div>
+
+</div>

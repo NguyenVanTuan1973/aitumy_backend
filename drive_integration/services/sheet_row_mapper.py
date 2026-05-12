@@ -92,18 +92,6 @@ def map_sheet_rows_to_documents(rows):
             "doc_type": "thu" if sheet == "so_doanh_thu" else "chi",
         })
 
-    # for r in rows:
-    #     if len(r) < 5:
-    #         continue
-    #
-    #     result.append({
-    #         "date": r[0],
-    #         "content": r[1],
-    #         "amount": Decimal(r[2]) if r[2] else 0,
-    #         "payment_method": r[3],
-    #         "created_date": r[4],
-    #         "doc_type": "thu" if sheet == "so_doanh_thu" else "chi",
-    #     })
 
     return result
 

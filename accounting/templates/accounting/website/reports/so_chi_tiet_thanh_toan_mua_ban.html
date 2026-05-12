@@ -1,0 +1,113 @@
+{% load humanize %}
+
+<div class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex flex-wrap justify-content-between align-items-center py-2">
+        <strong class="me-3">
+            📊 {{ journal_entries.report_name }}
+        </strong>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+
+        <!-- INFO -->
+        <div class="p-2">
+            <b>Tài khoản:</b> {{ journal_entries.account }} <br>
+            <b>Đối tượng:</b> {{ journal_entries.partner }} <br>
+            <b>Loại tiền:</b> VNĐ
+        </div>
+
+        <!-- TABLE -->
+        <table class="table table-bordered table-hover mb-0">
+
+            <thead class="table-light text-center align-middle">
+                <tr>
+                    <th rowspan="2">Ngày ghi sổ</th>
+                    <th colspan="2">Chứng từ</th>
+                    <th rowspan="2">Diễn giải</th>
+                    <th rowspan="2">TK đối ứng</th>
+                    <th colspan="2">Số phát sinh</th>
+                    <th colspan="2">Số dư</th>
+                </tr>
+                <tr>
+                    <th>Số hiệu</th>
+                    <th>Ngày</th>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in journal_entries.rows %}
+                <tr class="
+                    {% if row.dien_giai == 'Cộng số phát sinh' %}table-warning fw-bold{% endif %}
+                    {% if row.dien_giai == 'Số dư cuối kỳ' %}table-info fw-bold{% endif %}
+                ">
+
+                    <!-- Ngày ghi sổ -->
+                    <td class="text-center">
+                        {{ row.ngay_ghi_so }}
+                    </td>
+
+                    <!-- Số CT -->
+                    <td class="text-center">
+                        {{ row.so_ct }}
+                    </td>
+
+                    <!-- Ngày CT -->
+                    <td class="text-center">
+                        {{ row.ngay_ct }}
+                    </td>
+
+                    <!-- Diễn giải -->
+                    <td>
+                        {{ row.dien_giai }}
+                    </td>
+
+                    <!-- TK đối ứng -->
+                    <td class="text-center">
+                        {{ row.tk_doi_ung }}
+                    </td>
+
+                    <!-- PS Nợ -->
+                    <td class="text-end">
+                        {% if row.ps_no %}{{ row.ps_no|intcomma }}{% endif %}
+                    </td>
+
+                    <!-- PS Có -->
+                    <td class="text-end">
+                        {% if row.ps_co %}{{ row.ps_co|intcomma }}{% endif %}
+                    </td>
+
+                    <!-- Dư Nợ -->
+                    <td class="text-end">
+                        {% if row.du_no %}{{ row.du_no|intcomma }}{% endif %}
+                    </td>
+
+                    <!-- Dư Có -->
+                    <td class="text-end">
+                        {% if row.du_co %}{{ row.du_co|intcomma }}{% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="card-footer text-end">
+        Ngày tạo: {{ journal_entries.generated_at|date:"d/m/Y H:i" }}
+    </div>
+
+</div>

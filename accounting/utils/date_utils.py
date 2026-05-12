@@ -1,4 +1,3 @@
-# accounting/utils/date_utils.py
 
 from datetime import datetime, timedelta
 

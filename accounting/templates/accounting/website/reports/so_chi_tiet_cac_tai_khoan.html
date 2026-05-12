@@ -1,0 +1,82 @@
+{% load humanize %}
+
+<style>
+    .money {
+        text-align: right;
+        font-family: monospace;
+        font-weight: 600;
+    }
+
+    .row-total {
+        background: #ffe8a1;
+        font-weight: bold;
+    }
+</style>
+
+<div class="card mt-4 shadow-lg border-success">
+
+    <!-- HEADER -->
+    <div class="card-header bg-success text-white d-flex justify-content-between">
+        <strong>📘 {{ data.report_name }}</strong>
+
+        <div>
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖</button>
+        </div>
+    </div>
+
+    <div class="p-3">
+        <div><b>Tài khoản:</b> {{ data.account }}</div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>Số CT</th>
+                <th>Diễn giải</th>
+                <th>TK đối ứng</th>
+                <th>Nợ</th>
+                <th>Có</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in data.rows %}
+            <tr class="{% if row.desc == 'CỘNG' %}row-total{% endif %}">
+
+                <td>{{ row.date }}</td>
+                <td>{{ row.doc_no }}</td>
+                <td>{{ row.desc }}</td>
+
+                <!-- 🔥 TK đối ứng -->
+                <td>{{ row.contra_account }}</td>
+
+                <!-- 🔥 Nợ -->
+                <td class="money">
+                    {% if row.debit and row.debit != 0 %}
+                        {{ row.debit|intcomma }}
+                    {% endif %}
+                </td>
+
+                <!-- 🔥 Có -->
+                <td class="money">
+                    {% if row.credit and row.credit != 0 %}
+                        {{ row.credit|intcomma }}
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Không có dữ liệu</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="card-footer text-end">
+        Ngày tạo: {{ data.generated_at|date:"d/m/Y H:i" }}
+    </div>
+</div>

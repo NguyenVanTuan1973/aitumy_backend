@@ -39,7 +39,6 @@ def query_sheet_data(
         quarter=None
 ):
 
-    # gc = get_gspread_client(user.drive.access_token)
     gc = get_gspread_client(user)
 
     spreadsheet = gc.open_by_key(sheet_id)
@@ -78,7 +77,6 @@ def query_sheet_data(
         if start_date <= doc_date <= end_date:
             results.append(r)
 
-    print('excel_date_to_date', results)
     return results
 
 def parse_sheet_date(value):

@@ -37,7 +37,6 @@ class DocumentRecognizeAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         files = serializer.validated_data["files"]
 
-        # 🔥 LẤY doc_type TỪ FLUTTER (CHÍNH LÀ code_norm)
         doc_type = request.data.get("doc_type")
 
         form_template = None

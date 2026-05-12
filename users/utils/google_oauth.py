@@ -4,8 +4,7 @@ from django.conf import settings
 from google.auth.transport.requests import Request
 
 SCOPES = [
-    "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file",
 ]
 
 

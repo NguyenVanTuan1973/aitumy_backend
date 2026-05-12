@@ -6,15 +6,6 @@ from .extract_utils import extract_form_template_data
 from .models import DocumentMetadata, DocumentGroup, GroupDocument, FormTemplate, RegisterMapping, AccountingBook
 
 
-# ------------------------------
-# Helper: paths Tesseract / Poppler (tuỳ môi trường)
-# ------------------------------
-# Nếu bạn đặt cấu hình khác trên server, chỉnh lại các đường dẫn này trong settings hoặc ở đây.
-# TESSERACT_CMD = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-# TESSDATA_PREFIX = r"C:\Program Files\Tesseract-OCR\tessdata"
-# POPPLER_PATH = r"C:\poppler-25.07.0\Library\bin"
-
-
 
 @admin.register(DocumentMetadata)
 class DocumentMetadataAdmin(admin.ModelAdmin):

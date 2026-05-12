@@ -1,0 +1,115 @@
+{% load humanize %} <!-- Cần thiết để dùng filter intcomma -->
+
+<style>
+    .report-wrapper {
+        background: #fff; padding: 20px; border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        font-family: "Times New Roman", Times, serif;
+    }
+    .table-report th { background-color: #f8f9fa !important; vertical-align: middle; font-size: 0.9rem; border: 1px solid #dee2e6; }
+    .table-report td { font-size: 0.85rem; border: 1px solid #dee2e6; }
+    .money { text-align: right; font-family: 'Courier New', Courier, monospace; white-space: nowrap; }
+    .btn-group-action { display: flex; justify-content: flex-end; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    
+    @media print {
+        .btn-group-action { display: none !important; }
+        .report-wrapper { box-shadow: none; padding: 0; }
+        body { background: none; }
+    }
+    .money {
+        text-align: right !important;
+        font-family: 'Courier New', Courier, monospace; /* Font chữ đơn cách giúp số thẳng hàng */
+        padding-right: 10px !important;
+        white-space: nowrap; /* Không cho nhảy dòng số tiền */
+    }
+</style>
+
+<div class="card mt-4 shadow-lg border-primary">
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+
+        <div class="card-header bg-primary text-white text-center">
+            <strong>📊{{ report_name }}</strong>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="header-report text-center mb-4">
+        <div class="text-muted small">
+            <!-- Dùng default: để tránh lỗi "Exception while resolving variable" -->
+            Nơi mở tài khoản: <span class="border-bottom px-2 text-dark">{{ bank_name|default:"..........." }}</span><br>
+            Số hiệu tài khoản: <span class="border-bottom px-2 text-dark">{{ account_number|default:"..........." }}</span>
+        </div>
+    </div>
+
+    <table class="table table-sm table-report align-middle">
+        <thead class="text-center">
+            <tr>
+                <th rowspan="2">Ngày ghi sổ</th>
+                <th colspan="2">Chứng từ</th>
+                <th rowspan="2">Diễn giải</th>
+                <th rowspan="2">TK đối ứng</th>
+                <th colspan="2">Số tiền</th>
+                <th rowspan="2">Còn lại</th>
+                <th rowspan="2">Ghi chú</th>
+            </tr>
+            <tr>
+                <th>Số hiệu</th>
+                <th>Ngày</th>
+                <th>Thu (Gửi vào)</th>
+                <th>Chi (Rút ra)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                {% if row.note == "Số dư đầu kỳ" %}
+                <tr class="fw-bold bg-light">
+                    <td colspan="5" class="text-start">SỐ DƯ ĐẦU KỲ</td>
+                    <td></td><td></td>
+                    <td class="money text-primary">{{ row.balance|default:0|intcomma }}</td>
+                    <td></td>
+                </tr>
+                {% elif row.D == "Cộng số phát sinh trong kỳ" %}
+                <tr class="fw-bold">
+                    <td colspan="5" class="text-center">Cộng số phát sinh trong kỳ</td>
+                    <td class="money">{{ row.debit|default:0|intcomma }}</td>
+                    <td class="money">{{ row.credit|default:0|intcomma }}</td>
+                    <td></td><td></td>
+                </tr>
+                {% elif row.D == "Số dư cuối kỳ" %}
+                <tr class="fw-bold bg-light">
+                    <td colspan="5" class="text-start">SỐ DƯ CUỐI KỲ</td>
+                    <td></td><td></td>
+                    <td class="money text-danger">{{ row.balance|default:0|intcomma }}</td>
+                    <td></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td class="text-center">{{ row.A }}</td>
+                    <td class="text-center">{{ row.B }}</td>
+                    <td class="text-center">{{ row.C }}</td>
+                    <td class="text-start px-2">{{ row.D }}</td>
+                    <td class="text-center">{{ row.E }}</td>
+                    <td class="money">{{ row.debit|intcomma|default:"" }}</td>
+                    <td class="money">{{ row.credit|intcomma|default:"" }}</td>
+                    <td class="money fw-bold">{{ row.balance|intcomma|default:0 }}</td>
+                    <td><small>{{ row.note|default:"" }}</small></td>
+                </tr>
+                {% endif %}
+            {% empty %}
+                <tr><td colspan="9" class="text-center">Không có dữ liệu</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="card-footer text-end">
+        Ngày tạo: {{ generated_at|date:"d/m/Y H:i"  }}
+    </div>
+
+</div>
+

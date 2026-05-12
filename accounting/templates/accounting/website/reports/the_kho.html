@@ -1,0 +1,81 @@
+{% load humanize %}
+
+<style>
+    .money {
+        text-align: right;
+        font-family: monospace;
+    }
+
+    .row-total {
+        background: #ffe8a1;
+        font-weight: bold;
+    }
+</style>
+
+<div class="card mt-4 shadow border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <strong>📊 {{ journal_entries.report_name }}</strong>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="mb-2">
+            Ngày lập thẻ: {{ journal_entries.generated_at|date:"d/m/Y" }}
+        </div>
+
+        <table class="table table-bordered table-sm">
+
+            <thead class="text-center table-light">
+                <tr>
+                    <th rowspan="2">STT</th>
+                    <th rowspan="2">Ngày</th>
+                    <th rowspan="2">Số CT</th>
+                    <th rowspan="2">Diễn giải</th>
+                    <th rowspan="2">Ngày N/X</th>
+                    <th colspan="3">Số lượng</th>
+                    <th rowspan="2">Ký nhận</th>
+                </tr>
+                <tr>
+                    <th>Nhập</th>
+                    <th>Xuất</th>
+                    <th>Tồn</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in journal_entries.rows %}
+                <tr class="{% if 'Cộng' in row.dien_giai %}row-total{% endif %}">
+                    <td class="text-center">{{ row.stt }}</td>
+                    <td class="text-center">{{ row.ngay }}</td>
+                    <td class="text-center">{{ row.so_ct }}</td>
+                    <td>{{ row.dien_giai }}</td>
+                    <td class="text-center">{{ row.ngay_nhap_xuat }}</td>
+
+                    <td class="money">
+                        {% if row.nhap %}{{ row.nhap|floatformat:2 }}{% endif %}
+                    </td>
+                    <td class="money">
+                        {% if row.xuat %}{{ row.xuat|floatformat:2 }}{% endif %}
+                    </td>
+                    <td class="money">
+                        {% if row.ton is not None %}{{ row.ton|floatformat:2 }}{% endif %}
+                    </td>
+
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

@@ -35,8 +35,6 @@ class HKDIncomeSheetExportPDF:
             quarter: int | None = None,
     ) -> str:
 
-        print("Chạy qua def export")
-
         # =========================
         # 1. RESOLVE PERIOD
         # =========================
@@ -126,10 +124,8 @@ class HKDIncomeSheetExportPDF:
         # =============================
         user_drive = UserDrive.objects.filter(user=self.user).first()
 
-        print(user_drive)
-
         if not user_drive:
-            print("⚠️ fallback UserDrive trong export PDF")
+
             user_drive = UserDrive.objects.first()
 
         if not user_drive or not user_drive.access_token:

@@ -1,0 +1,479 @@
+{% extends "accounting/website/base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- MENU BÊN TRÁI -->
+    <div class="dropdown">
+
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            ⚙️ Nhật ký chung
+        </button>
+
+        <ul class="dropdown-menu">
+
+            <!-- SUBMENU -->
+            <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">
+                    📊 Sổ kế toán hình thức Nhật ký chung
+                </a>
+
+                <ul class="dropdown-menu">
+
+                    <li><hr class="dropdown-divider">1. Phân hệ: Tiền mặt & Tiền gửi (Quỹ)</li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS07()">Sổ quỹ tiền mặt (S07-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS07A()">Sổ chi tiết quỹ tiền mặt (S07a-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="renderSoTienGui()">Sổ tiền gửi không kỳ hạn (S08-DN)</button></li>
+
+                    <li><hr class="dropdown-divider">2. Phân hệ: Mua hàng & Bán hàng (Công nợ)</li>
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS35()">Sổ chi tiết bán hàng (S35-DN)</button></li>
+
+                    <li><hr class="dropdown-divider">3. Phân hệ: Kho & Hàng hóa</li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS10()">Chi tiết VL-DC-SP-HH (S10-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS11()">Tổng hợp VL-DC-SP-HH (S11-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS12()">Thẻ kho (Sổ kho) (S12-DN)</button></li>
+
+                    <li><hr class="dropdown-divider">4. Phân hệ: Tài sản & Công cụ</li>
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS31()">Sổ chi tiết thanh toán mua-bán (S31-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS34()">Sổ chi tiết tiền vay (S34-DN)</button></li>
+
+                    <li><hr class="dropdown-divider">5. Phân hệ: Tổng hợp & Báo cáo Thuế</li>
+                    <li><button class="dropdown-item" type="button" onclick="generateJournal()">Sổ nhật ký chung (S03a-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS36()">Sổ chi phí sản xuất, kinh doanh (S36-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS61()">Thuế GTGT (S61-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS06()">Bảng cân đối số phát sinh (S06-DN)</button></li>
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS37()">Thẻ tính giá thành SP DV (S37-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS38()">Sổ chi tiết các tài khoản (S38-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS41a()">Sổ theo dõi đầu tư vào cty liên doanh (S41a-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS42a()">Sổ theo dõi đầu tư vào cty liên kết (S42a-DN)</button></li>
+
+                </ul>
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+        </ul>
+    </div>
+    <div class="dropdown">
+
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            ⚙️ Nhật ký sổ cái
+        </button>
+
+        <ul class="dropdown-menu">
+
+            <!-- SUBMENU -->
+            <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">
+                    📊 Sổ kế toán hình thức Nhật ký - sổ cái
+                </a>
+
+                <ul class="dropdown-menu">
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS07()">Sổ quỹ tiền mặt (S07-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS07A()">Sổ kế chi tiết quỹ tiền mặt (S07a-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="renderSoTienGui()">Sổ tiền gửi không kỳ hạn (S08-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS10()">Chi tiết VL-DC-SP-HH (S10-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS11()">Tổng hợp VL-DC-SP-HH (S11-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS12()">Thẻ kho (Sổ kho) (S12-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS31()">Sổ chi tiết thanh toán mua-bán (S31-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS34()">Sổ chi tiết tiền vay (S34-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS35()">Sổ chi tiết bán hàng (S35-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS36()">Sổ chi phí sản xuất, kinh doanh (S36-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS61()">Thuế GTGT (S61-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS01()">Nhật ký - Sổ cái (S01-DN)</button></li>
+                </ul>
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+        </ul>
+    </div>
+    <div class="dropdown">
+
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            ⚙️ Chứng từ ghi sổ
+        </button>
+
+        <ul class="dropdown-menu">
+
+            <!-- SUBMENU -->
+            <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">
+                    📊 Sổ kế toán hình thức Chứng từ ghi sổ
+                </a>
+
+                <ul class="dropdown-menu">
+
+                    <li><button class="dropdown-item" type="button" onclick="renderSoTienGui()">Sổ tiền gửi không kỳ hạn (S08-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS06()">Bảng cân đối số phát sinh (S06-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS07()">Sổ quỹ tiền mặt (S07-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS07A()">Sổ kế chi tiết quỹ tiền mặt (S07a-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS10()">Chi tiết VL-DC-SP-HH (S10-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS11()">Tổng hợp VL-DC-SP-HH (S11-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS12()">Thẻ kho (Sổ kho) (S12-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS31()">Sổ chi tiết thanh toán mua-bán (S31-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS34()">Sổ chi tiết tiền vay (S34-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS35()">Sổ chi tiết bán hàng (S35-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS36()">Sổ chi phí sản xuất, kinh doanh (S36-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS61()">Thuế GTGT (S61-DN)</button></li>
+
+                </ul>
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+<!--            <li>-->
+<!--                <button class="dropdown-item text-danger" type="button" onclick="resetUpload()">-->
+<!--                    🧹 Xóa file hiện tại-->
+<!--                </button>-->
+<!--            </li>-->
+
+        </ul>
+    </div>
+    <div class="dropdown">
+
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            ⚙️ Nhật ký chứng từ
+        </button>
+
+        <ul class="dropdown-menu">
+
+            <!-- SUBMENU -->
+            <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">
+                    📊 Sổ kế toán hình thức Nhật ký - Chứng từ
+                </a>
+
+                <ul class="dropdown-menu">
+
+                    <li><button class="dropdown-item" type="button" onclick="loadReport('so-cai')">Sổ cái (S05-DN)</button></li>
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS07()">Sổ quỹ tiền mặt (S07-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS07A()">Sổ kế chi tiết quỹ tiền mặt (S07a-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="renderSoTienGui()">Sổ tiền gửi không kỳ hạn (S08-DN)</button></li>
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS10()">Chi tiết VL-DC-SP-HH (S10-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS11()">Tổng hợp VL-DC-SP-HH (S11-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS12()">Thẻ kho (Sổ kho) (S12-DN)</button></li>
+
+                    <li><button class="dropdown-item" type="button" onclick="generateS31()">Sổ chi tiết thanh toán mua-bán (S031-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS34()">Sổ chi tiết tiền vay (S34-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS35()">Sổ chi tiết bán hàng (S35-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS36()">Sổ chi phí sản xuất, kinh doanh (S36-DN)</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="generateS61()">Thuế GTGT (S61-DN)</button></li>
+
+                </ul>
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+<!--            <li>-->
+<!--                <button class="dropdown-item text-danger" type="button" onclick="resetUpload()">-->
+<!--                    🧹 Xóa file hiện tại-->
+<!--                </button>-->
+<!--            </li>-->
+
+        </ul>
+    </div>
+
+    <!-- TITLE BÊN PHẢI -->
+    <h4 class="mb-0 text-end flex-grow-1">
+        📤 Upload Excel
+    </h4>
+
+</div>
+
+<div class="card p-4 mb-4">
+    <form id="upload-form" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="d-flex align-items-end gap-3 mb-3">
+
+            <div class="flex-grow-1">
+                <label>📂 File Excel hóa đơn (mua + bán)</label>
+                <input type="file" name="excel_file" class="form-control" accept=".xlsx,.xls" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                🚀 Upload & Xử lý
+            </button>
+
+        </div>
+
+    </form>
+</div>
+
+<style>
+/* =============================
+   🔥 1. CONTAINER: KHÓA KHUNG 10 DÒNG
+============================= */
+.table-container {
+    height: 450px;       /* Độ cao hiển thị khoảng 10 dòng */
+    max-height: 450px;
+    overflow: auto;      /* Quan trọng: Tạo thanh cuộn */
+    border: 1px solid #dee2e6;
+    background: #fff;
+    position: relative;
+    display: block;      /* Ép table phải tuân thủ chiều cao container */
+    width: 100%;
+}
+
+/* Tùy chỉnh thanh cuộn cho chuyên nghiệp */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* =============================
+   🔥 2. TABLE CẤU HÌNH CHUNG
+============================= */
+.table-main {
+    table-layout: fixed;    /* Cố định độ rộng để tính sticky chính xác */
+    width: max-content;     /* Để bảng kéo dài tạo thanh cuộn ngang */
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+/* =============================
+   🔥 3. STICKY HEADER & FOOTER
+============================= */
+/* Header luôn nổi trên cùng khi cuộn dọc */
+.table-main thead th {
+    position: sticky;
+    top: 0;
+    z-index: 300;           /* Cao nhất để đè lên các cột sticky bên dưới */
+    background: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    white-space: nowrap;
+    padding: 10px 8px;
+}
+
+/* Footer luôn nổi dưới đáy khi cuộn dọc */
+.table-main tfoot td {
+    position: sticky;
+    bottom: 0;
+    z-index: 200;
+    background: #f8f9fa !important;
+    font-weight: bold;
+    border-top: 2px solid #dee2e6 !important;
+}
+
+/* =============================
+   🔥 4. STICKY 3 CỘT ĐẦU (FIX LỖI KHOẢNG TRẮNG)
+============================= */
+
+/* Cột 1: Mẫu số HĐ */
+.table-main th:nth-child(1),
+.table-main td:nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 100;
+    background: inherit; /* Lấy màu nền của dòng */
+    width: 120px;       /* Độ rộng cố định */
+    min-width: 120px;
+}
+
+/* Cột 2: Ký hiệu HĐ */
+.table-main th:nth-child(2),
+.table-main td:nth-child(2) {
+    position: sticky;
+    left: 120px;        /* Bằng width cột 1 */
+    z-index: 100;
+    background: inherit;
+    width: 120px;
+    min-width: 120px;
+}
+
+/* Cột 3: Loại */
+.table-main th:nth-child(3),
+.table-main td:nth-child(3) {
+    position: sticky;
+    left: 240px;        /* Bằng width cột 1 + 2 */
+    z-index: 100;
+    background: inherit;
+    width: 100px;
+    min-width: 100px;
+    border-right: 2px solid #dee2e6 !important; /* Vạch ngăn cách khi cuộn ngang */
+}
+
+/* Ưu tiên Header cho 3 cột đầu */
+.table-main thead th:nth-child(1),
+.table-main thead th:nth-child(2),
+.table-main thead th:nth-child(3) {
+    z-index: 400;       /* Phải cao hơn các th khác */
+}
+
+/* =============================
+   🔥 5. BODY & HIỆU ỨNG
+============================= */
+.table-main tbody td {
+    padding: 8px;
+    white-space: nowrap;
+    border-bottom: 1px solid #eee;
+    background: #fff;   /* Nền mặc định cho td */
+}
+
+.table-main tbody tr:nth-child(even) td {
+    background: #fcfcfc; /* Màu cho dòng chẵn */
+}
+
+/* Hover đổi màu cả dòng kể cả phần sticky */
+.table-main tbody tr:hover td {
+    background: #f1f8ff !important;
+}
+
+.money {
+    text-align: right;
+    font-family: Consolas, monospace;
+    color: #0d6efd;
+}
+</style>
+
+
+<!-- FILTER -->
+<div class="mb-2 d-flex gap-2">
+    <select id="filter-invoice-type" class="form-select form-select-sm w-auto">
+        <option value="all">Tất cả</option>
+        <option value="invoice_in">Mua vào</option>
+        <option value="invoice_out">Bán ra</option>
+    </select>
+</div>
+
+<div class="mb-2 d-flex align-items-start gap-2 flex-wrap">
+
+    <button id="btn-column-panel" class="btn btn-sm btn-outline-secondary" onclick="toggleColumnPanel()">
+        ⚙️ Chọn cột hiển thị
+    </button>
+
+    <button id="btn-group-mode" class="btn btn-sm btn-outline-warning" onclick="toggleGroupMode()">
+    📊 Bật Gom nhóm
+    </button>
+
+    <!-- PANEL -->
+    <div id="column-panel"
+         style="display:none; max-height:200px; overflow:auto; border:1px solid #ccc; padding:10px; width:100%;">
+    </div>
+
+</div>
+
+<!-- table data -->
+<div class="mt-3 table-container">
+    <table class="table table-bordered table-main">
+        <thead>
+            <tr>
+                <th data-col="invoice_type">Loại</th>
+                <th data-col="number">Số HĐ</th>
+                <th data-col="create_date">Ngày lập</th>
+
+                <th data-col="template">Mẫu số HĐ</th>
+                <th data-col="symbol">Ký hiệu HĐ</th>
+
+                <th data-col="signing_date">Ngày ký số</th>
+                <th data-col="mccqt">MCCQT</th>
+                <th data-col="cqt_signing_date">Ngày CQT ký</th>
+                <th data-col="currency">Tiền tệ</th>
+                <th data-col="exchange">Tỷ giá</th>
+                <th data-col="seller_name">Tên người bán</th>
+                <th data-col="seller_tax_code">MST người bán</th>
+                <th data-col="seller_address">Địa chỉ người bán</th>
+                <th data-col="buyer_name">Tên người mua</th>
+                <th data-col="buyer_address">Địa chỉ người mua</th>
+                <th data-col="delivery_address">Địa chỉ giao hàng</th>
+                <th data-col="license_plate">Phương tiện</th>
+                <th data-col="customer_code">Mã khách hàng</th>
+                <th data-col="id_card">CCCD</th>
+                <th data-col="payment">Thanh toán bằng</th>
+                <th data-col="property">Tính chất</th>
+                <th data-col="material_code">Mã vật tư</th>
+                <th data-col="material_series">Số lô</th>
+                <th data-col="expiration_date">Hạn sử dụng</th>
+                <th data-col="product_name">Tên hàng hóa</th>
+                <th data-col="product_unit">ĐVT</th>
+                <th data-col="quantity">Số lượng</th>
+                <th data-col="unit_price" class="money">Đơn giá</th>
+                <th data-col="discount" class="money">Chiết khấu</th>
+                <th data-col="tax_rate">Thuế suất</th>
+                <th data-col="amount" class="money" >Tiền chưa thuế</th>
+                <th data-col="tax" class="money" >Tiền thuế</th>
+                <th data-col="discount_total" class="money" >Chiết khấu</th>
+                <th data-col="fee_total" class="money" >Tiền phí</th>
+                <th data-col="payment_total" class="money">Thanh toán</th>
+                <th data-col="invoice_status" >Trạng thái</th>
+                <th data-col="associated_invoice_status" >HĐ liên quan</th>
+                <th data-col="invoice_check_result" >KQ kiểm tra</th>
+                <th data-col="lookup_link" >Link tra cứu</th>
+                <th data-col="lookup_code" >Mã tra cứu</th>
+                <th data-col="posted">Status</th>
+                <th data-col="entries">Định khoản</th>
+                <th data-col="pdf">PDF</th>
+
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+        <tfoot id="table-footer"></tfoot>
+
+    </table>
+
+</div>
+
+<!-- FORM ĐỊNH KHOẢN -->
+<div class="modal fade" id="entryModal" tabindex="-1">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content shadow">
+
+      <!-- HEADER -->
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title mb-0">📘 Định khoản</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body p-2">
+
+        <!-- ✅ GIỮ scroll nhưng gọn -->
+        <div style="overflow-x:auto;">
+
+          <table class="table table-bordered table-sm align-middle text-center mb-0"
+                 style="min-width: 320px;"> <!-- 🔥 quan trọng -->
+
+            <thead class="table-light">
+                <tr>
+                    <th style="width:70px">Nợ/Có</th>
+                    <th style="width:100px">Tài khoản</th>
+                    <th style="width:120px" class="text-end">Số tiền</th>
+                </tr>
+            </thead>
+
+            <tbody id="entry-body"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer py-1">
+        <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 🔥 REPORT RENDER -->
+<div id="report-container">
+    <!-- HTML report sẽ đổ vào đây -->
+</div>
+
+{% endblock %}

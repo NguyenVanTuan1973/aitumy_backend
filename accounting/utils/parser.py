@@ -1,4 +1,3 @@
-# accounting/utils/parser.py
 
 
 def parse_accounting_code(code):

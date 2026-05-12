@@ -74,7 +74,6 @@ class GoogleOAuth2CallbackView(APIView):
                 status=400
             )
 
-        # (OPTIONAL) log mode cho debug
         mode = session.metadata.get("mode")
 
         # 4️⃣ Kết thúc session
@@ -98,11 +97,6 @@ def has_drive_permission(user):
     """
     Kiểm tra user có được phép dùng Google Drive hay không
     """
-    # return UserModule.objects.filter(
-    #     user=user,
-    #     module__code="google_drive",
-    #     is_enabled=True
-    # ).exists()
 
 # Lấy Google OAuth URL
 class DriveAuthUrlView(APIView):
@@ -232,7 +226,6 @@ class DriveInitFolderView(APIView):
                     "code": server_auth_code,
                     "client_id": settings.GOOGLE_CLIENT_ID,
                     "client_secret": settings.GOOGLE_CLIENT_SECRET,
-                    # "redirect_uri": "postmessage",
                     "redirect_uri": "http://localhost:8000/api/drive/oauth/callback/",
                     "grant_type": "authorization_code",
                 },

@@ -1,0 +1,173 @@
+{% load humanize %}
+
+<style>
+    #so-s10-form {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: #000;
+    }
+
+    table {
+        color: #000 !important;
+        font-size: 13px;
+    }
+
+    thead th {
+        font-weight: 700;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    tbody td {
+        font-weight: 500;
+    }
+
+    .money {
+        text-align: right;
+        font-family: "Courier New", monospace;
+        font-weight: 600;
+    }
+
+    .row-total {
+        background: #ffe8a1 !important;
+        font-weight: 700 !important;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #f8f9fa;
+    }
+</style>
+
+<div id="so-s10-form" class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <h6 class="mb-0 fw-bold">
+            📦 {{ journal_entries.report_name|default:"SỔ CHI TIẾT VẬT LIỆU, HÀNG HÓA" }}
+        </h6>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖</button>
+        </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body p-0">
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-bordered table-hover mb-0">
+
+                <!-- HEADER 2 DÒNG -->
+                <thead class="table-light">
+                    <tr>
+                        <th rowspan="2">Số CT</th>
+                        <th rowspan="2">Ngày</th>
+                        <th rowspan="2">Diễn giải</th>
+                        <th rowspan="2">TK ĐƯ</th>
+                        <th rowspan="2">Đơn giá</th>
+                        <th colspan="2">Nhập</th>
+                        <th colspan="2">Xuất</th>
+                        <th colspan="2">Tồn</th>
+                        <th rowspan="2">Ghi chú</th>
+                    </tr>
+                    <tr>
+                        <th>S.L</th>
+                        <th>Thành tiền</th>
+                        <th>S.L</th>
+                        <th>Thành tiền</th>
+                        <th>S.L</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+
+                <!-- DATA -->
+                <tbody class="font-monospace">
+                    {% for row in journal_entries.rows %}
+
+                    <tr class="{% if 'Cộng' in row.dien_giai %}row-total{% endif %}">
+
+                        <td class="text-center">{{ row.so_ct }}</td>
+                        <td class="text-center">{{ row.ngay_ct }}</td>
+                        <td>{{ row.dien_giai }}</td>
+                        <td class="text-center">{{ row.tai_khoan }}</td>
+
+                        <!-- ĐƠN GIÁ -->
+                        <td class="money">
+                            {% if row.don_gia %}
+                                {{ row.don_gia|floatformat:0|intcomma }}
+                            {% endif %}
+                        </td>
+
+                        <!-- NHẬP -->
+                        <td>
+                            {% if row.nhap_sl %}
+                                {{ row.nhap_sl }}
+                            {% endif %}
+                        </td>
+
+                        <td class="money">
+                            {% if row.nhap_tien %}
+                                {{ row.nhap_tien|floatformat:0|intcomma }}
+                            {% endif %}
+                        </td>
+
+                        <!-- XUẤT -->
+                        <td>
+                            {% if row.xuat_sl %}
+                                {{ row.xuat_sl }}
+                            {% endif %}
+                        </td>
+
+                        <td class="money">
+                            {% if row.xuat_tien %}
+                                {{ row.xuat_tien|floatformat:0|intcomma }}
+                            {% endif %}
+                        </td>
+
+                        <!-- TỒN -->
+                        <td>
+                            {% if row.ton_sl is not None %}
+                                {{ row.ton_sl }}
+                            {% endif %}
+                        </td>
+
+                        <td class="money">
+                            {% if row.ton_tien %}
+                                {{ row.ton_tien|floatformat:0|intcomma }}
+                            {% endif %}
+                        </td>
+
+                        <td>{{ row.ghi_chu }}</td>
+
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center p-4">
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="card-footer py-2 bg-light text-end">
+        <small class="text-muted">
+            Ngày tạo: {{ journal_entries.generated_at|date:"d/m/Y H:i" }}
+        </small>
+    </div>
+
+</div>

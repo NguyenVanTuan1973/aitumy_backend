@@ -1,0 +1,120 @@
+{% load humanize %}
+
+<style>
+    .money {
+        text-align: right;
+        font-family: monospace;
+        font-weight: 600;
+    }
+
+    .row-total {
+        background: #ffe8a1;
+        font-weight: bold;
+    }
+</style>
+
+<div class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <strong>📊 {{ report_name }}</strong>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr class="text-center align-middle">
+                    <th rowspan="2">Ngày ghi sổ</th>
+                    <th colspan="2">Chứng từ</th>
+                    <th rowspan="2">Diễn giải</th>
+                    <th colspan="2">Số phát sinh</th>
+                    <th colspan="2">Tài khoản đối ứng</th>
+                </tr>
+                <tr class="text-center">
+                    <th>Số hiệu</th>
+                    <th>Ngày</th>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                    <th>Nợ</th>
+                    <th>Có</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td class="text-center">
+                        {{ row.date }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ row.so_ct }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ row.ngay_ct }}
+                    </td>
+
+                    <td>
+                        {{ row.dien_giai }}
+                    </td>
+
+                    <!-- PS NỢ -->
+                    <td class="money money-no">
+                        {% if row.ps_no is not None %}
+                            {{ row.ps_no|floatformat:0|intcomma }}
+                        {% endif %}
+                    </td>
+
+                    <!-- PS CÓ -->
+                    <td class="money money-co">
+                        {% if row.ps_co is not None %}
+                            {{ row.ps_co|floatformat:0|intcomma }}
+                        {% endif %}
+                    </td>
+
+                    <td class="text-center">
+                        {{ row.tk_no }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ row.tk_co }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr class="fw-bold">
+                    <td colspan="4" class="text-center">
+                        Tổng cộng
+                    </td>
+
+                    <td class="text-end">
+                        {{ total_no|floatformat:0 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ total_co|floatformat:0 }}
+                    </td>
+
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="card-footer text-end">
+        Ngày tạo: {{ generated_at|date:"d/m/Y H:i"  }}
+    </div>
+
+</div>
+
+
+

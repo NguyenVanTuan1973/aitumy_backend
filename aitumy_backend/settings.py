@@ -9,20 +9,14 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG = False
 
-DEBUG = True
-
-# Production
-# ALLOWED_HOSTS = [
-#     'ttumy.vn',
-#     'www.ttumy.vn',
-#     'api.ttumy.vn',
-#     'app.ttumy.vn',
-# ]
-
-ALLOWED_HOSTS = ['*']   # DEV
-
+ALLOWED_HOSTS = [
+    'ttumy.vn',
+    'www.ttumy.vn',
+    'api.ttumy.vn',
+    'app.ttumy.vn',
+]
 
 # =========================
 # STATIC & MEDIA CONFIG
@@ -54,14 +48,10 @@ else:
     MEDIA_ROOT = TTUMY_MEDIA_ROOT
 
 
-# STATIC_URL = '/static/'
 STATIC_URL = '/assets/' # production
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
-
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 # =========================
 # CSRF / CORS (Flutter API)
@@ -86,6 +76,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.humanize',
 
     "channels",
     "support",
@@ -135,7 +127,7 @@ CKEDITOR_5_CONFIGS = {
             "|",
             "blockQuote",
             "|",
-            "imageUpload",   # 👈 thêm dòng này
+            "imageUpload",
             "|",
             "undo", "redo",
         ],
@@ -153,7 +145,6 @@ CKEDITOR_5_CONFIGS = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [],
         "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -169,7 +160,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'aitumy_backend.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -180,7 +170,6 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT", "3306"),
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -207,6 +196,7 @@ TIME_ZONE = 'Asia/Ho_Chi_Minh'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+USE_THOUSAND_SEPARATOR = True
 
 # =========================
 # LOGGING (cơ bản)
@@ -230,13 +220,11 @@ LOGGING = {
     },
 }
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =======================================
 #  DRF CONFIG
 # =======================================
-
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -256,19 +244,16 @@ scope = [
   "https://www.googleapis.com/auth/userinfo.profile",
 ]
 
-
 # =========================
 # GOOGLE DRIVE OAUTH
 # =========================
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-# GOOGLE_OAUTH_REDIRECT_URI = "http://localhost:8000/api/drive/oauth/callback/"
 GOOGLE_OAUTH_REDIRECT_URI = os.getenv("GOOGLE_OAUTH_REDIRECT_URI")
 
 GOOGLE_OAUTH_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile",
-    "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
 ]
 
@@ -281,7 +266,6 @@ AUTH_USER_MODEL = "users.User"
 # EXPORT PDF – TEMP FILE CLEANUP CONFIG
 # =====================================================
 
-# media/exports
 EXPORT_MEDIA_DIR = BASE_DIR / "media" / "exports"
 
 # File sống tối đa 30 phút

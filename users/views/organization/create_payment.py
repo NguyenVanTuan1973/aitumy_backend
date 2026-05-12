@@ -81,8 +81,8 @@ def create_momo_payment(request, amount, plan_code):
     request_id = order_id
 
     order_info = f"Upgrade {plan_code}"
-    redirect_url = "https://yourdomain.com/payment/return/"
-    ipn_url = "https://yourdomain.com/api/payment/momo-ipn/"
+    redirect_url = "https://ttumy.vn/payment/return/"
+    ipn_url = "https://ttumy.vn/api/payment/momo-ipn/"
 
     raw = (
         f"accessKey={settings.MOMO_ACCESS_KEY}"
@@ -133,7 +133,7 @@ def create_vnpay_payment(request, amount, plan_code):
         "vnp_OrderInfo": f"Upgrade {plan_code}",
         "vnp_OrderType": "billpayment",
         "vnp_Locale": "vn",
-        "vnp_ReturnUrl": "https://yourdomain.com/payment/vnpay-return/",
+        "vnp_ReturnUrl": "https://ttumy.vn/payment/vnpay-return/",
         "vnp_IpAddr": "127.0.0.1",
         "vnp_CreateDate": datetime.datetime.now().strftime('%Y%m%d%H%M%S'),
     }

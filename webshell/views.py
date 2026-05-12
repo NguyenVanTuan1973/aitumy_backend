@@ -145,23 +145,7 @@ def guide_center(request):
 
     return render(request, "webshell/guide_center.html", context)
 
-"""
-def guide_center(request):
-    videos = GuideArticle.objects.filter(is_active=True)
 
-    contents = WebContent.objects.filter(
-        content_key__in=["about", "faq"],
-        is_active=True
-    )
-
-    context = {
-        "landing_videos": videos,
-        "about": contents.filter(content_key="about").first(),
-        "faq": contents.filter(content_key="faq").first(),
-    }
-
-    return render(request, "webshell/guide_center.html", context)
-"""
 def policy(request):
     privacy = WebContent.objects.filter(
         content_key="privacy",
@@ -275,13 +259,10 @@ def download_app(request):
     })
 
 def faq_page(request):
-    print("FAQ PAGE CALLED")  # <- QUAN TRỌNG
 
     categories = FAQCategory.objects.prefetch_related(
         "faqs__legal_clauses"
     ).order_by("order")
-
-    print("categories:", categories.count())
 
     return render(request, "faq.html", {
         "categories": categories

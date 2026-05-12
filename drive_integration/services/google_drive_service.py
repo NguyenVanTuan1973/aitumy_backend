@@ -26,7 +26,6 @@ def get_user_credentials(user):
         client_secret=settings.GOOGLE_CLIENT_SECRET,
         scopes=[
             "https://www.googleapis.com/auth/drive.file",
-            "https://www.googleapis.com/auth/spreadsheets"
         ],
     )
 

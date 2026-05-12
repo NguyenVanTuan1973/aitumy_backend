@@ -1,0 +1,146 @@
+{% load humanize %}
+
+<style>
+    #so-thue-gtgt-form {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: #000;
+    }
+
+    table {
+        color: #000 !important;
+    }
+
+    tbody td {
+        font-weight: 500;
+    }
+
+    .money {
+        text-align: right;
+        font-weight: 600;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        color: #000;
+    }
+
+    .money-no {
+        color: #0d6efd;
+    }
+
+    .money-co {
+        color: #dc3545;
+    }
+
+    .row-total {
+        background: #ffe8a1 !important;
+        font-weight: 700 !important;
+        font-size: 14px;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+    }
+
+    thead th {
+        font-weight: 700;
+        color: #000;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+</style>
+
+<div id="so-thue-gtgt-form" class="card mt-4 shadow-lg border-primary">
+
+    <!-- HEADER -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+        <h6 class="mb-0 fw-bold">
+            📘 {{ journal_entries.report_name|default:"SỔ THEO DÕI THUẾ GTGT" }}
+        </h6>
+
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light" onclick="window.print()">🖨️ In sổ</button>
+            <button class="btn btn-sm btn-light" onclick="exportExcel(window.registerData)">📊 Excel</button>
+            <button class="btn btn-sm btn-danger ms-2" onclick="this.closest('.card').remove()">✖ Đóng</button>
+        </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body p-0">
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-hover table-bordered mb-0">
+
+                <!-- HEADER -->
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center sticky-top">Số CT</th>
+                        <th class="text-center sticky-top">Ngày CT</th>
+                        <th class="text-center sticky-top">Diễn giải</th>
+                        <th class="text-center sticky-top">Số TK</th>
+                        <th class="text-center sticky-top">PS Nợ</th>
+                        <th class="text-center sticky-top">PS Có</th>
+                    </tr>
+                </thead>
+
+                <!-- DATA -->
+                <tbody class="font-monospace">
+                    {% for row in journal_entries.rows %}
+
+                    <tr class="{% if row.dien_giai == 'Cộng số phát sinh' %}row-total{% endif %}">
+
+                        <!-- SỐ CT -->
+                        <td class="text-center text-nowrap">
+                            {{ row.so_ct|default:"" }}
+                        </td>
+
+                        <!-- NGÀY -->
+                        <td class="text-center text-nowrap">
+                            {{ row.ngay_ct|default:"" }}
+                        </td>
+
+                        <!-- DIỄN GIẢI -->
+                        <td>
+                            {{ row.dien_giai|default:"" }}
+                        </td>
+
+                        <!-- TÀI KHOẢN -->
+                        <td class="text-center">
+                            {{ row.tai_khoan|default:"" }}
+                        </td>
+
+                        <!-- PS NỢ -->
+                        <td class="money money-no">
+                            {% if row.ps_no %}
+                                {{ row.ps_no|floatformat:0|intcomma }}
+                            {% endif %}
+                        </td>
+
+                        <!-- PS CÓ -->
+                        <td class="money money-co">
+                            {% if row.ps_co %}
+                                {{ row.ps_co|floatformat:0|intcomma }}
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center p-4">
+                            Không có dữ liệu hiển thị
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="card-footer py-2 bg-light text-end">
+        <small class="text-muted">
+            Ngày tạo: {{ journal_entries.generated_at|date:"d/m/Y H:i" }}
+        </small>
+    </div>
+
+</div>
