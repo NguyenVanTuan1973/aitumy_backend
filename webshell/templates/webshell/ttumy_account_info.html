@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Tài khoản TTuMy</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body{
+            background: #f5f7fb;
+            min-height: 100vh;
+        }
+
+        .topbar{
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            padding: 14px 0;
+        }
+
+        .logo{
+            width: 52px;
+        }
+
+        .page-wrapper{
+            max-width: 820px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .card-custom{
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .card-header-custom{
+            background: white;
+            padding: 28px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-body-custom{
+            padding: 28px;
+        }
+
+        .info-row{
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .info-label{
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .info-value{
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .warning-box{
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 14px;
+            padding: 18px;
+            font-size: 14px;
+            color: #6d4c41;
+        }
+
+        .danger-zone{
+            border: 1px solid #ffcdd2;
+            background: #fff5f5;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .btn-delete{
+            min-width: 220px;
+            height: 48px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .footer-text{
+            font-size: 13px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<form id="csrf-form" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<!-- Topbar -->
+<div class="topbar">
+
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <a href="/" class="text-white text-decoration-none d-flex align-items-center">
+
+            <img
+                src="{% static 'images/logo_ttumy.png' %}"
+                class="logo me-2"
+                alt="TTuMy"
+            >
+
+            <strong>TTuMy</strong>
+
+        </a>
+
+        <a
+            href="{% url 'webshell:logout' %}"
+            class="btn btn-light btn-sm"
+        >
+            Đăng xuất
+        </a>
+
+    </div>
+
+</div>
+
+<!-- Content -->
+<div class="page-wrapper">
+
+    <!-- Account Card -->
+    <div class="card shadow-sm card-custom">
+
+        <div class="card-header-custom">
+
+            <h3 class="mb-2">
+                Thông tin tài khoản
+            </h3>
+
+            <div class="text-muted">
+                Quản lý thông tin tài khoản TTuMy của bạn
+            </div>
+
+        </div>
+
+        <div class="card-body-custom">
+
+            <!-- Organization Name -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Tên doanh nghiệp / HKD
+                </div>
+
+                <div class="col-md-8 info-value">
+                    {{ organization.name }}
+                </div>
+
+            </div>
+
+            <!-- Email -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Gmail
+                </div>
+
+                <div class="col-md-8 info-value">
+                    {{ request.user.email }}
+                </div>
+
+            </div>
+
+            <!-- Tax Code -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Mã số thuế
+                </div>
+
+                <div class="col-md-8 info-value">
+                    {{ organization.tax_code }}
+                </div>
+
+            </div>
+
+            <!-- Legal Form -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Loại hình
+                </div>
+
+                <div class="col-md-8 info-value">
+
+                    {% if organization.legal_form == "HKD" %}
+                        Hộ kinh doanh
+                    {% else %}
+                        Doanh nghiệp
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Subscription Plan -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Gói dịch vụ
+                </div>
+
+                <div class="col-md-8 info-value">
+
+                    {% if subscription %}
+
+                        <span class="badge bg-primary">
+                            {{ subscription.plan.name }}
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+                            FREE
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Subscription Status -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Trạng thái gói
+                </div>
+
+                <div class="col-md-8 info-value">
+
+                    {% if subscription and subscription.is_active %}
+
+                        <span class="text-success">
+                            Đang hoạt động
+                        </span>
+
+                    {% else %}
+
+                        <span class="text-danger">
+                            Hết hạn
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Subscription Start -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Ngày bắt đầu
+                </div>
+
+                <div class="col-md-8 info-value">
+
+                    {% if subscription %}
+                        {{ subscription.current_period_start|date:"d/m/Y" }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Subscription End -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Ngày hết hạn
+                </div>
+
+                <div class="col-md-8 info-value">
+
+                    {% if subscription %}
+                        {{ subscription.current_period_end|date:"d/m/Y" }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Remaining Days -->
+            <div class="row info-row">
+
+                <div class="col-md-4 info-label">
+                    Thời gian còn lại
+                </div>
+
+                <div class="col-md-8 info-value">
+
+                    {% if subscription and subscription.is_active %}
+
+                        <span class="fw-semibold">
+                            {{ subscription.days_remaining }} ngày
+                        </span>
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Data Notice -->
+    <div class="warning-box mt-4">
+
+        <strong>Lưu ý về dữ liệu kế toán</strong>
+
+        <div class="mt-2">
+
+            TTuMy chỉ lưu thông tin tài khoản để quản lý dịch vụ gồm:
+
+            <ul class="mt-2 mb-2">
+                <li>Tên doanh nghiệp / hộ kinh doanh</li>
+                <li>Email đăng nhập</li>
+                <li>Mã số thuế</li>
+            </ul>
+
+            Dữ liệu kế toán và chứng từ của bạn được lưu trực tiếp
+            trên Google Drive / Google Sheets thuộc quyền sở hữu của bạn.
+
+            <br><br>
+
+            Nếu muốn xóa dữ liệu kế toán,
+            vui lòng đăng nhập Google Drive của bạn để tự quản lý
+            hoặc xóa dữ liệu tương ứng.
+
+        </div>
+
+    </div>
+
+    <!-- Delete Account -->
+    <div class="danger-zone mt-4">
+
+        <h5 class="text-danger mb-3">
+            Xóa tài khoản
+        </h5>
+
+        <div class="mb-4 text-muted">
+
+            Khi xóa tài khoản:
+
+            <ul class="mt-2">
+                <li>Tài khoản đăng nhập TTuMy sẽ bị xóa</li>
+                <li>Thông tin quản lý tài khoản sẽ bị xóa</li>
+                <li>Kết nối dịch vụ với TTuMy sẽ bị hủy</li>
+                <li>Dữ liệu trên Google Drive của bạn sẽ KHÔNG tự động bị xóa</li>
+            </ul>
+
+        </div>
+
+        <button
+            class="btn btn-danger btn-delete"
+            onclick="deleteAccount()"
+        >
+            Xóa toàn bộ tài khoản
+        </button>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-text">
+
+        © 2026 TTuMy - Ứng dụng hỗ trợ kế toán
+
+    </div>
+
+</div>
+
+<script>
+async function deleteAccount(){
+    const confirmDelete = confirm("Bạn chắc chắn muốn xóa toàn bộ tài khoản TTuMy?");
+    if(!confirmDelete) return;
+
+    try {
+        // 1. Lấy token CSRF từ Django Template cấp cho trình duyệt
+        const csrfToken = "{{ csrf_token }}";
+
+        // 2. Gọi đúng URL đã chuyển sang app webshell
+        const response = await fetch("{% url 'webshell:delete-account' %}", {
+            method: "POST",
+            credentials: "same-origin", // Giữ lại dòng này để trình duyệt tự gửi Session Cookie đã đăng nhập lên
+            headers: {
+                "X-CSRFToken": csrfToken, // Bắt buộc phải có cho Django View thuần
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        // Đọc text trước để dễ debug nếu backend xảy ra sự cố
+        const textData = await response.text();
+        let data;
+        try {
+            data = JSON.parse(textData);
+        } catch(pErr) {
+            console.error("Phản hồi từ Server không phải JSON:", textData);
+            alert("Có lỗi từ hệ thống backend (Không trả về JSON).");
+            return;
+        }
+
+        if(response.ok && data.success){
+            alert("Tài khoản đã được xóa thành công.");
+            // Chuyển hướng về trang chủ sau khi xóa thành công
+            window.location.href = "/";
+        } else {
+            alert(data.error || "Không thể thực hiện xóa tài khoản.");
+        }
+
+    } catch(err) {
+        console.error("Lỗi Fetch:", err);
+        alert("Có lỗi kết nối xảy ra.");
+    }
+}
+</script>
+
+</body>
+</html>

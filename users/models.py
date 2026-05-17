@@ -198,6 +198,88 @@ class OrganizationMember(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+class Subscription(models.Model):
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["current_period_end"]),
+        ]
+
+    STATUS_ACTIVE = "active"
+    STATUS_EXPIRED = "expired"
+    STATUS_CANCELLED = "cancelled"
+
+    STATUS_CHOICES = [
+        (STATUS_ACTIVE, "Active"),
+        (STATUS_EXPIRED, "Expired"),
+        (STATUS_CANCELLED, "Cancelled"),
+    ]
+
+    organization = models.OneToOneField(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="subscription"
+    )
+
+    plan = models.ForeignKey(
+        "Plan",
+        on_delete=models.PROTECT
+    )
+
+    current_period_start = models.DateField()
+
+    current_period_end = models.DateField()
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_ACTIVE,
+    )
+
+    # =============================
+    # COMPUTED FIELD
+    # =============================
+
+    @property
+    def days_remaining(self):
+
+        if not self.is_active():
+            return 0
+
+        today = timezone.now().date()
+
+        delta = self.current_period_end - today
+
+        return max(delta.days, 0)
+
+    # =============================
+    # BUSINESS LOGIC
+    # =============================
+
+    def is_active(self):
+
+        if self.status != self.STATUS_ACTIVE:
+            return False
+
+        if self.current_period_end < timezone.now().date():
+            return False
+
+        return True
+
+    def mark_expired(self):
+        self.status = self.STATUS_EXPIRED
+        self.save(update_fields=["status"])
+
+    def cancel(self):
+        self.status = self.STATUS_CANCELLED
+        self.save(update_fields=["status"])
+
+    def __str__(self):
+        return f"{self.organization.name} - {self.status}"
+
+"""
 class Subscription(models.Model):
 
     class Meta:
@@ -243,13 +325,29 @@ class Subscription(models.Model):
     )
 
     # =============================
+    # COMPUTED FIELD
+    # =============================
+
+    @property
+    def days_remaining(self):
+
+        if not self.is_active():
+            return 0
+
+        today = timezone.now().date()
+
+        delta = self.current_period_end - today
+
+        return max(delta.days, 0)
+
+    # =============================
     # BUSINESS LOGIC
     # =============================
 
     def is_active(self):
-        """
-        Subscription còn hiệu lực
-        """
+        
+        # Subscription còn hiệu lực
+        
         if self.status != self.STATUS_ACTIVE:
             return False
 
@@ -271,6 +369,8 @@ class Subscription(models.Model):
     # =============================
     def __str__(self):
         return f"{self.organization.name} - {self.status}"
+        
+"""
 
 class Plan(models.Model):
     code = models.CharField(max_length=50, unique=True)

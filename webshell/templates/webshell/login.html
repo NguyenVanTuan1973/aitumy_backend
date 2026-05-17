@@ -1,65 +1,156 @@
+
 <!DOCTYPE html>
+{% load static %}
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập hệ thống</title>
+
+    <title>Đăng nhập</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
     <style>
-        body {
+
+        body{
             background: linear-gradient(135deg, #0d6efd, #0b5ed7);
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px;
+
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .login-card {
-            width: 400px;
-            border-radius: 12px;
+        .login-card{
+            width: 100%;
+            max-width: 420px;
+
+            border: none;
+            border-radius: 18px;
+
+            overflow: hidden;
         }
 
-        .brand-title {
+        .card-body{
+            padding: 36px;
+        }
+
+        .logo{
+            width: 78px;
+            height: auto;
+        }
+
+        .brand-title{
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .subtitle{
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .form-control{
+            height: 48px;
+            border-radius: 10px;
+        }
+
+        .btn-login{
+            height: 48px;
+            border-radius: 10px;
             font-weight: 600;
         }
+
+        .delete-alert{
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .footer-text{
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        a{
+            text-decoration: none;
+        }
+
+        a:hover{
+            text-decoration: underline;
+        }
+
     </style>
 </head>
+
 <body>
 
 <div class="card shadow-lg login-card">
-    <div class="card-body p-4">
 
-        <h4 class="text-center mb-4 brand-title">
-            WebShell Login
-        </h4>
+    <div class="card-body">
 
+        <!-- Logo -->
+        <div class="text-center mb-4">
+
+            <img
+                src="{% static 'images/logo_ttumy.png' %}"
+                alt="TTuMy"
+                class="logo mb-3"
+            >
+
+            <h3 class="brand-title mb-2">
+                Đăng nhập
+            </h3>
+
+            <div class="subtitle">
+                Quản lý tài khoản và dữ liệu Hộ kinh doanh/Doanh nghiệp
+            </div>
+
+        </div>
+
+        <!-- Messages -->
         {% if messages %}
             {% for message in messages %}
+
                 <div class="alert alert-danger">
                     {{ message }}
                 </div>
+
             {% endfor %}
         {% endif %}
 
+        <!-- Login Form -->
         <form method="POST">
+
             {% csrf_token %}
 
             <div class="mb-3">
-                <label class="form-label">Email</label>
+
+                <label class="form-label fw-semibold">
+                    Email
+                </label>
+
                 <input
                     type="email"
                     name="email"
                     class="form-control"
-                    placeholder="admin@example.com"
+                    placeholder="name@example.com"
                     required
                 >
+
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Mật khẩu</label>
+
+                <label class="form-label fw-semibold">
+                    Mật khẩu
+                </label>
+
                 <input
                     type="password"
                     name="password"
@@ -67,20 +158,48 @@
                     placeholder="••••••••"
                     required
                 >
+
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">
+            <button
+                type="submit"
+                class="btn btn-primary w-100 btn-login"
+            >
                 Đăng nhập
             </button>
+
         </form>
 
-        <hr class="my-4">
+        <!-- Forgot password -->
+        <div class="text-center mt-3">
 
-        <div class="text-center text-muted small">
-            Admin Portal & User Free Management
+            <a href="/forgot-password/" class="small">
+                Quên mật khẩu?
+            </a>
+
+        </div>
+
+        <!-- Delete account info -->
+        <div class="alert alert-warning mt-4 delete-alert">
+
+            <strong>Xóa tài khoản:</strong>
+
+            <div class="mt-1">
+                Người dùng đăng nhập để quản lý hoặc
+                xóa toàn bộ dữ liệu, tài khoản TTuMy.
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-4 footer-text">
+
+            Hệ thống quản lý kế toán và dữ liệu doanh nghiệp TTuMy
+
         </div>
 
     </div>
+
 </div>
 
 </body>

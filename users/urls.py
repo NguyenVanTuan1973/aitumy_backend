@@ -5,6 +5,7 @@ from .views import RegisterView, LoginView, ForgotPasswordView, ChangePasswordVi
     OrganizationUpdateAPIView, OrganizationIndustriesUpdateAPIView, GoogleLoginAPIView
 from .views.auth.activate import CompleteOnboardingAPIView
 
+
 app_name = "users"
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),

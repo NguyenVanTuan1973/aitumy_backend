@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -15,7 +16,9 @@ from .forms import ConsultationRequestForm
 from .models import WebContent, ConsultationRequest, GuideArticle, FAQCategory, FAQItem
 from .serializers import WebContentSerializer, FAQCategorySerializer
 
-from users.models import Module
+from users.models import Module, OrganizationModule, OrganizationMember, Subscription
+
+
 
 def index(request):
     about_content = WebContent.objects.filter(
@@ -85,7 +88,6 @@ def legal_center(request):
         "documents": documents
     })
 
-
 # Dùng cho Frontend Flutter
 @api_view(["GET"])
 @permission_classes([AllowAny])
@@ -145,7 +147,6 @@ def guide_center(request):
 
     return render(request, "webshell/guide_center.html", context)
 
-
 def policy(request):
     privacy = WebContent.objects.filter(
         content_key="privacy",
@@ -165,24 +166,174 @@ def policy(request):
     return render(request, "webshell/policy.html", context)
 
 def login_view(request):
+
+    # =========================================
+    # ĐÃ LOGIN TRƯỚC ĐÓ
+    # =========================================
+
+    if request.user.is_authenticated:
+
+        user = request.user
+
+        # SUPER ADMIN
+        if user.is_superuser:
+            return redirect(
+                "admin_portal:admin_dashboard"
+            )
+
+        return redirect_user_by_permission(request,user)
+
+    # =========================================
+    # POST LOGIN
+    # =========================================
+
     if request.method == "POST":
-        email = request.POST.get("email")
+
+        email = (
+            request.POST.get("email") or ""
+        ).strip()
+
         password = request.POST.get("password")
 
-        user = authenticate(request, username=email, password=password)
+        user = authenticate(
+            request,
+            username=email,
+            password=password
+        )
 
-        if user is not None:
-            login(request, user)
+        # LOGIN FAIL
+        if not user:
 
-            if user.is_superuser:
-                return redirect("admin_portal:admin_dashboard")
-            else:
-                return redirect("dashboard")
+            messages.error(
+                request,
+                "Sai email hoặc mật khẩu."
+            )
 
-        else:
-            messages.error(request, "Sai email hoặc mật khẩu.")
+            return render(
+                request,
+                "webshell/login.html"
+            )
 
-    return render(request, "webshell/login.html")
+        # LOGIN SUCCESS
+        login(request, user)
+
+        # SUPER ADMIN
+        if user.is_superuser:
+
+            return redirect(
+                "admin_portal:admin_dashboard"
+            )
+
+        return redirect_user_by_permission(request,user)
+
+    return render(
+        request,
+        "webshell/login.html"
+    )
+
+def logout_view(request):
+
+    logout(request)
+
+    return redirect("webshell:login")
+
+# =====================================================
+# REDIRECT USER
+# =====================================================
+
+def redirect_user_by_permission(request, user):
+
+    # MEMBER
+    member = (
+        OrganizationMember.objects
+        .select_related("organization")
+        .filter(user=user)
+        .first()
+    )
+
+    # Không có organization
+    if not member:
+
+        messages.error(
+            None,
+            "Tài khoản chưa được kích hoạt."
+        )
+
+        return redirect("webshell:login")
+
+    organization = member.organization
+
+    """
+    ============================================
+    CHECK MODULE ACCOUNTING WEB
+    ============================================
+    """
+
+    has_web_module = (
+        OrganizationModule.objects
+        .select_related("module")
+        .filter(
+            organization=organization,
+            is_enabled=True,
+            module__code="ACCOUNTING_WEB"
+        )
+        .exists()
+    )
+
+    # =========================================
+    # ACCOUNTING WEB USER
+    # =========================================
+
+    if has_web_module:
+
+        return redirect("dashboard")
+
+    # =========================================
+    # DEFAULT:
+    # MOBILE APP USER
+    # =========================================
+
+    return redirect(
+        "webshell:account_info"
+    )
+
+@login_required
+def account_info_view(request):
+
+    member = (
+        OrganizationMember.objects
+        .select_related("organization")
+        .filter(user=request.user)
+        .first()
+    )
+
+    organization = (
+        member.organization
+        if member else None
+    )
+
+    subscription = None
+
+    if organization:
+
+        subscription = (
+            Subscription.objects
+            .select_related("plan")
+            .filter(
+                organization=organization
+            )
+            .first()
+        )
+
+    return render(
+        request,
+        "webshell/ttumy_account_info.html",
+        {
+            "organization": organization,
+            "subscription": subscription,
+        }
+    )
+
 
 def register_view(request):
 

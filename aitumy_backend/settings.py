@@ -11,6 +11,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = False
 
+# DEBUG = True
+# ALLOWED_HOSTS = ['*']   # DEV
+
 ALLOWED_HOSTS = [
     'ttumy.vn',
     'www.ttumy.vn',
@@ -60,12 +63,18 @@ CSRF_TRUSTED_ORIGINS = [
     "https://api.ttumy.vn",
     "https://ttumy.vn",
     "https://app.ttumy.vn",
+
+    # "http://127.0.0.1:8000",
+    # "http://localhost:8000",
 ]
 
 # Nếu Flutter gọi API, CORS headers
 CORS_ALLOWED_ORIGINS = [
     "https://app.ttumy.vn",
     "https://ttumy.vn",
+
+    # "http://127.0.0.1:8000",
+    # "http://localhost:8000",
 ]
 
 
